@@ -1,0 +1,4 @@
+name = "autocorrelation-shell"
+uuid = "69d4c476-349e-11e9-22d5-d17d72ccee3f"
+authors = ["Rishi Subramanian <risubramanian@ucdavis.edu>"]
+version = "0.1.0"
