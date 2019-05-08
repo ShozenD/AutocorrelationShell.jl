@@ -5,6 +5,9 @@ using StatsBase
 using Wavelets
 
 function iconv(f,x)
+"""
+
+"""
    n = length(x)
    p = length(f)
    if p <= n
@@ -23,22 +26,45 @@ function iconv(f,x)
 end
 
 function translate(x, to)
+"""
+	translate(x, to)
+
+	Circular translates the signal `x` by the desired places `to` to the left
+"""
     return circshift(x, -to)
 end
 
 function dyadlength(x)
+"""
+
+"""
     return log2(length(x))
 end
 
 function subsample(x)
+"""
+	subsample(x)
+
+	Samples every other element of input signal `x`
+"""
     return x[1:2:end-1]
 end
 
 function cdthresh(x, th)
+"""
+	cdthresh(x, th)
+
+	Thresholds the elements of `x` by threshold `th`
+"""
     return diag(abs(x) >= th) * x
 end
 
 function cirperm(a)
+"""
+	cirperm(a)
+
+	Given a sequence `a` for length `n`, return an `n`x`n` matrix containing all circular permutations of `a`
+"""
     n = length(a)
     res = zeros(n, n)
     for i = 1:n
@@ -48,20 +74,26 @@ function cirperm(a)
 end
 
 function node(d, b)
+"""
+
+"""
   return 2^d + b
 end
 
 function echant(n, d, b)
+"""
+	echant(n, d, b)
+
+	Sample the range `(b+1):n` in intervals of `2^d`
+"""
     return (b + 1):(2^d):n
 end
 
 function autocorr(H::AbstractArray)
-    """autocorr: Compute the autocorrelation of a filter with itself.
+"""
+	autocorr(H)
 
-    Input:
-        H: Filter
-    Output:
-        Autocorrelation coefficients of H
+	Computes the autocorrelation coefficients of a given filter
 """
     l = length(H)
     result = zeros(1, l - 1)
@@ -76,10 +108,20 @@ function autocorr(H::AbstractArray)
 end
 
 function autocorr(f::OrthoFilter)
+"""
+	autocorr(f)
+
+	Computes the autocorrelation coefficients of a given filter
+"""
     return autocorr(WT.qmf(f))
 end
 
 function Pfilter(filter::OrthoFilter)
+"""
+	Pfilter(filter::OrthoFilter)
+
+	Computes the autocorrelation low filter
+"""
     a = autocorr(filter)
     c1 = 1 / (2 * sqrt(2))
     c2 = c1 / 2
@@ -88,6 +130,11 @@ function Pfilter(filter::OrthoFilter)
 end
 
 function Qfilter(filter::OrthoFilter)
+"""
+	Qfilter(filter::OrthoFilter)
+
+	Computes the autocorrelation high filter
+"""
     a = autocorr(filter)
     c1 = 1 / (2 * sqrt(2))
     c2 = c1 / 2
@@ -96,6 +143,11 @@ function Qfilter(filter::OrthoFilter)
 end
 
 function acnyquist(s)
+"""
+	acnyquist(s)
+
+	Computes the Nyquist frequency of a given signal `s`
+"""
 	n = length(s)
 	sub = s[collect(2:2:n)]
 	r = 0
@@ -107,6 +159,11 @@ function acnyquist(s)
 end
 
 function ac_filter(x, filter)
+"""
+	ac_filter(x, filter)
+
+	Computes the response of signal `x` to the autocorrelation filter `filter`
+"""
     n = length(x)
     p = length(Q)
     tran2 = p - 1
@@ -117,6 +174,11 @@ function ac_filter(x, filter)
 end
 
 function iwt_ac(acwt)
+"""
+	iwt_ac(acwt)
+
+	Performs the 1D autocorrelation decomposition (inverse)
+"""
     w = acwt[:, 1]
     n, m = size(acwt)
     for i = 2:m
@@ -126,6 +188,17 @@ function iwt_ac(acwt)
 end
 
 function fwt_ac(x,L,P,Q)
+"""
+	fwt_ac(x,L,P,Q)
+
+	Computes the forward autocorrelation wavelet transform
+
+	# Arguments
+	- `x`: array to transform
+	- `L`: degree of coarsest scale
+	- `P`: Low AC shell filter
+	- `Q`: High AC shell filter
+"""
 	n = length(x)
 	J = dyadlength(n)
 	D = J-L
@@ -146,6 +219,11 @@ function fwt_ac(x,L,P,Q)
 end
 
 function thresh0(acwt, th, hard=false)
+"""
+	thresh0(acwt, th, hard=false)
+
+	Thresholds a computed signal decomposition (`acwt`) to threshold `th`. Either hard or soft (default) thresholding can be used
+"""
 	n, m = size(acwt)
 	res=zeros(n,m)
 	res[:,1]=acwt[:,1]
@@ -161,7 +239,17 @@ function thresh0(acwt, th, hard=false)
 	return res
 end
 
-function [RS,RD]=ACCorrCalc(R, w::OrthoFilter, L)
+function ACCorrCalc(R, w::OrthoFilter, L)
+"""
+	ACCorrCalc(R, w::OrthoFilter, L)
+
+	Calculates all induced autocovariance functions at all levels
+
+	# Arguments
+	- `R`: autocovariance of the original signal
+	- `w`: wavelet to be used
+	- `L`: decomposition level
+"""
   P = Pfilter(w)
   Q = Qfilter(w)
 
@@ -182,9 +270,16 @@ function [RS,RD]=ACCorrCalc(R, w::OrthoFilter, L)
     RS[1:2^(J - j), j + 1] = subsample(ac_filter(RS[1:2^(J - j + 1), j]', b))';
     RD[1:2^(J - j), j] = subsample(ac_filter(RS[1:2^(J - j + 1), j]',c))';
   end
+
+  return RS, RD
 end
 
 function inv_ac_table(table, basis)
+"""
+	inv_ac_table(table, basis)
+
+	Computes the inverse AC decomposition using the chosen basis
+"""
     n, D = size(table)
     L = floor(log2(D))
     tab2 = deepcopy(table)
