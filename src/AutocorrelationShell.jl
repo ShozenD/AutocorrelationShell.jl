@@ -36,7 +36,9 @@ end
 
 function dyadlength(x)
 """
+	dyadlength(x)
 
+	Returns the dyadic length of a sequence `x`
 """
     return log2(length(x))
 end
@@ -239,9 +241,9 @@ function thresh0(acwt, th, hard=false)
 	return res
 end
 
-function ACCorrCalc(R, w::OrthoFilter, L)
+function autocorr_calc(R, w::OrthoFilter, L)
 """
-	ACCorrCalc(R, w::OrthoFilter, L)
+	autocorr_calc(R, w::OrthoFilter, L)
 
 	Calculates all induced autocovariance functions at all levels
 
@@ -250,28 +252,28 @@ function ACCorrCalc(R, w::OrthoFilter, L)
 	- `w`: wavelet to be used
 	- `L`: decomposition level
 """
-  P = Pfilter(w)
-  Q = Qfilter(w)
+	P = Pfilter(w)
+	Q = Qfilter(w)
 
-  b = autocorr(P) / 2
-  c = autocorr(Q) / 2
+	b = autocorr(P) / 2
+	c = autocorr(Q) / 2
 
-  b = vcat(b[end:-1:1], norm(P)^2, b)
-  c = vcat(c[end:-1:1], norm(Q)^2, c)
+	b = vcat(b[end:-1:1], norm(P)^2, b)
+	c = vcat(c[end:-1:1], norm(Q)^2, c)
 
-  n = length(R)
-  J = log2(n)
+	n = length(R)
+	J = log2(n)
 
-  RS = zeros(n, L+1)
-  RD = zeros(n, L)
-  RS[:,1] = R
+	RS = zeros(n, L+1)
+	RD = zeros(n, L)
+	RS[:,1] = R
 
-  for j = 1:L
-    RS[1:2^(J - j), j + 1] = subsample(ac_filter(RS[1:2^(J - j + 1), j]', b))';
-    RD[1:2^(J - j), j] = subsample(ac_filter(RS[1:2^(J - j + 1), j]',c))';
-  end
+	for j = 1:L
+	RS[1:2^(J - j), j + 1] = subsample(ac_filter(RS[1:2^(J - j + 1), j]', b))';
+	RD[1:2^(J - j), j] = subsample(ac_filter(RS[1:2^(J - j + 1), j]',c))';
+	end
 
-  return RS, RD
+	return RS, RD
 end
 
 function inv_ac_table(table, basis)
@@ -288,6 +290,7 @@ function inv_ac_table(table, basis)
         for b = 0:(2^d - 1)
             if basis[node(d, b)] == 1
                 tab2[:, node(d, b)] = iwt_ac(tab2[:, node(d + 1, 2 * b):node(d + 1, 2 * b + 1)])'
+			end
         end
     end
 
@@ -295,6 +298,6 @@ function inv_ac_table(table, basis)
 end
 
 
-export autocorr
+export autocorr, ac_filter, fwt_ac, iwt_ac, autocorr_calc
 
 end # module
