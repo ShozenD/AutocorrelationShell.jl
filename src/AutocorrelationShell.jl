@@ -4,6 +4,16 @@ using DSP
 using StatsBase
 using Wavelets
 
+function conv_filt(a,b,sig)
+    rst = zeros(size(sig))
+    for i in eachindex(sig)
+        tmp =  sum(b[j] * sig[i-j+1] for j in 1:min(i, length(b)))
+        tmp -= sum(a[j] * rst[i-j+1] for j in 1:min(i, length(a)))
+        rst[i] = tmp / a[1]
+    end
+    return rst
+end
+
 function iconv(f,x)
 """
 
@@ -20,7 +30,7 @@ function iconv(f,x)
       end
       xpadded = vcat(z,x)
    end
-   ypadded = filter(f, xpadded)
+   ypadded = conv_filt(1, f, xpadded)
    y = ypadded[(p+1):(n+p)]
    return y
 end
@@ -40,7 +50,7 @@ function dyadlength(x)
 
 	Returns the dyadic length of a sequence `x`
 """
-    return log2(length(x))
+    return trunc(Integer, log2(length(x)))
 end
 
 function subsample(x)
@@ -118,30 +128,30 @@ function autocorr(f::OrthoFilter)
     return autocorr(WT.qmf(f))
 end
 
-function Pfilter(filter::OrthoFilter)
+function pfilter(filter::OrthoFilter)
 """
 	Pfilter(filter::OrthoFilter)
 
 	Computes the autocorrelation low filter
 """
     a = autocorr(filter)
-    c1 = 1 / (2 * sqrt(2))
+    c1 = 1 / sqrt(2)
     c2 = c1 / 2
     b = c2 * a
-    return vcat(b[end:-1:1], c1, b)
+    return hcat(b[:, end:-1:1, :], c1, b)
 end
 
-function Qfilter(filter::OrthoFilter)
+function qfilter(filter::OrthoFilter)
 """
 	Qfilter(filter::OrthoFilter)
 
 	Computes the autocorrelation high filter
 """
     a = autocorr(filter)
-    c1 = 1 / (2 * sqrt(2))
+    c1 = 1 / sqrt(2)
     c2 = c1 / 2
     b = -c2 * a
-    return vcat(b[end:-1:1], c1, b)
+    return hcat(b[:, end:-1:1], c1, b)
 end
 
 function acnyquist(s)
@@ -167,11 +177,11 @@ function ac_filter(x, filter)
 	Computes the response of signal `x` to the autocorrelation filter `filter`
 """
     n = length(x)
-    p = length(Q)
+    p = length(filter)
     tran2 = p - 1
     tran1 = tran2 ÷ 2
 
-    d = translate(iconv(Q, translate(x, -tran1)), tran2)
+    d = circshift(iconv(filter, circshift(x, tran1)'), -tran2)
     return d[1:n]
 end
 
@@ -202,12 +212,12 @@ function fwt_ac(x,L,P,Q)
 	- `Q`: High AC shell filter
 """
 	n = length(x)
-	J = dyadlength(n)
+	J = dyadlength(x)
 	D = J-L
 	wp = zeros(n,D+1)
-	x = reshape(x,(1,length(x)))
+	# x = reshape(x,(1,length(x)))
 
-	wp[:,1] = x'
+	wp[:,1] = x
 	for d=0:(D-1)
 		for b=0:(2^d-1)
 		   s = wp[echant(n,d,b),1]'
@@ -252,8 +262,8 @@ function autocorr_calc(R, w::OrthoFilter, L)
 	- `w`: wavelet to be used
 	- `L`: decomposition level
 """
-	P = Pfilter(w)
-	Q = Qfilter(w)
+	P = pfilter(w)
+	Q = qfilter(w)
 
 	b = autocorr(P) / 2
 	c = autocorr(Q) / 2
@@ -298,6 +308,6 @@ function inv_ac_table(table, basis)
 end
 
 
-export autocorr, ac_filter, fwt_ac, iwt_ac, autocorr_calc
+export autocorr, ac_filter, fwt_ac, iwt_ac, autocorr_calc, pfilter, qfilter
 
 end # module
