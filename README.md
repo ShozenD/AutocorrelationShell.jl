@@ -21,3 +21,7 @@ decomposition = fwt_ac(x,L,P,Q)
 
 wiggle(decomposition, Overlap = false)
 ```
+
+Result:
+
+![Result](Presentation/auto_decomposition.png)
