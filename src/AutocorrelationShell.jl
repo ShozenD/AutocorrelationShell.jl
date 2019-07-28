@@ -181,7 +181,7 @@ function ac_filter(x, filter)
     tran2 = p - 1
     tran1 = tran2 ÷ 2
 
-    d = circshift(iconv(filter, circshift(x, tran1)'), -tran2)
+    d = ccircshift(iconv(filter, circshift(x', tran1)), -tran2)
     return d[1:n]
 end
 
