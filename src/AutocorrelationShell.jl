@@ -191,7 +191,7 @@ function iwt_ac(acwt)
 
 	Performs the 1D autocorrelation decomposition (inverse)
 """
-    w = acwt[:, 1]
+    y = deepcopy(acwt[:, 1])
     n, m = size(acwt)
     for i = 2:m
         y = (y + acwt[:, i]) / sqrt(2)
