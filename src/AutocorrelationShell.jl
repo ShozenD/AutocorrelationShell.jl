@@ -108,7 +108,7 @@ function autocorr(H::AbstractArray)
 	Computes the autocorrelation coefficients of a given filter
 """
     l = length(H)
-    result = zeros(1, l - 1)
+    result = zeros(l - 1)
     for k in 1:(l - 1)
         for i in 1:(l - k)
             result[k] += H[i] * H[i + k]
@@ -138,7 +138,7 @@ function pfilter(filter::OrthoFilter)
     c1 = 1 / sqrt(2)
     c2 = c1 / 2
     b = c2 * a
-    return hcat(b[:, end:-1:1, :], c1, b)
+    return vcat(b[end:-1:1], c1, b)
 end
 
 function qfilter(filter::OrthoFilter)
@@ -151,7 +151,7 @@ function qfilter(filter::OrthoFilter)
     c1 = 1 / sqrt(2)
     c2 = c1 / 2
     b = -c2 * a
-    return hcat(b[:, end:-1:1], c1, b)
+    return vcat(b[end:-1:1], c1, b)
 end
 
 function acnyquist(s)
@@ -181,7 +181,7 @@ function ac_filter(x, filter)
     tran2 = p - 1
     tran1 = tran2 ÷ 2
 
-    d = circshift(iconv(filter, circshift(x', tran1)), -tran2)
+    d = circshift(iconv(filter, circshift(x, tran1)), -tran2)
     return d[1:n]
 end
 
@@ -196,7 +196,7 @@ function iwt_ac(acwt)
     for i = 2:m
         y = (y + acwt[:, i]) / sqrt(2)
     end
-    return y'
+    return y
 end
 
 function fwt_ac(x,L,P,Q)
@@ -220,11 +220,11 @@ function fwt_ac(x,L,P,Q)
 	wp[:,1] = x
 	for d=0:(D-1)
 		for b=0:(2^d-1)
-		   s = wp[echant(n,d,b),1]'
+		   s = wp[echant(n,d,b),1]
 		   h = ac_filter(s,Q)
 		   l = ac_filter(s,P)
-		   wp[echant(n,d,b),D+1-d] = h'
-		   wp[echant(n,d,b),1] = l'
+		   wp[echant(n,d,b),D+1-d] = h
+		   wp[echant(n,d,b),1] = l
 		 end
 	end
 	return wp
