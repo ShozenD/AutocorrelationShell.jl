@@ -53,7 +53,7 @@ decomposition = fwt_ac(x,L,P,Q)
 wiggle(decomposition, Overlap = false)
 ```
 
-Result:
+### Result:
 
 ![Result](Presentation/auto_decomposition.png)
 
@@ -73,4 +73,18 @@ img = load(../test/pictures/lenna.jpg)
 img = Float64.(Gray.(img))
 
 decomposition = ac2d(img,L,P,Q)
+
+using Plots
+function ac2d_heatmap(ac2d)
+    x = [reduce(hcat, ac2d[i]) for i in 1:size(ac2d)[1]]
+    x = reduce(vcat, x)
+    x = abs.(x) # Ensure that there are no negative values
+    x = log.(x)
+    heatmap(x)
+end
+
+ac2d_heatmap(decomp)
 ```
+
+### Result:
+![Result](Presentation/lenna_ac2d_heatmap.png)
