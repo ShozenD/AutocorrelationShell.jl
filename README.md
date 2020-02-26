@@ -1,11 +1,10 @@
 # AutocorrelationShell.jl
 
 This library is an implementation of autocorrelation wavelets in Julia. It was
-made by Rishi Subramanian and Christina Chang under the supervision of Professor
- Naoki Saito at UC Davis.
+made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision of Professor Naoki Saito at UC Davis.
 
-## Prerequisites
-The required packages are 
+## Dependencies
+The required packages are
 + `DSP`
 + `StatsBase`
 + `Wavelets`
@@ -23,7 +22,7 @@ include("./autocorrelation-shell.jl")
 using .AutocorrelationShell
 ```
 
-## Autocorrelation Wavelet Transform
+## 1D Autocorrelation Wavelet Transform
 ```{julia}
 # Forward Autocorrelation Wavelet Transform
 fwt_ac(x,L,P,Q)
@@ -32,7 +31,7 @@ fwt_ac(x,L,P,Q)
 iwt_ac(y)
 ```
 
-## Example
+### Example
 Load the `Plots` package and the `wiggle` function
 ```{julia}
 using Plots
@@ -57,3 +56,21 @@ wiggle(decomposition, Overlap = false)
 Result:
 
 ![Result](Presentation/auto_decomposition.png)
+
+## 2D Autocorrelation Wavelet Transform
+```{julia}
+# Forward Autocorrelation Wavelet Transform
+ac2d(img,L,P,Q)
+```
+### Example
+```{julia}
+H = wavelet(WT.db2)
+L = 2
+Q = qfilter(H)
+P = pfilter(H)
+
+img = load(../test/pictures/lenna.jpg)
+img = Float64.(Gray.(img))
+
+decomposition = ac2d(img,L,P,Q)
+```
