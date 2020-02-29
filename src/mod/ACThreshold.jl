@@ -8,7 +8,7 @@ using LinearAlgebra
 using Statistics
 
 # hard
-function HardThreshold(x::AbstractArray{<:Number}, t::Real)
+function HardThreshold!(x::AbstractArray{<:Number}, t::Real)
     @assert t>=0
     @inbounds begin
         for i in eachindex(x)
@@ -21,7 +21,7 @@ function HardThreshold(x::AbstractArray{<:Number}, t::Real)
 end
 
 # soft
-function SoftThreshold(x::AbstractArray{<:Number}, t::Real)
+function SoftThreshold!(x::AbstractArray{<:Number}, t::Real)
     @assert t>=0
     @inbounds begin
         for i in eachindex(x)
@@ -37,18 +37,29 @@ function SoftThreshold(x::AbstractArray{<:Number}, t::Real)
 end
 
 # Overall function
-function acthreshold(ac2d, type, t::Real)
-    n = size(ac2d)[1]
+"""
+    acthreshold(x, type, t)
+
+    Thresholds the ac2d output with either hard of soft thresholding.
+
+    ### Arguments
+    `x`: ac2d output.
+    `type`: Threshold type. "hard" or "soft".
+    `t`: threshold value.
+"""
+function acthreshold(x, type, t::Real)
+    n = size(x)[1]
+    y = deepcopy(x) # to prevent inplace but slows speed. 
     for i in 1:n
         for j in 1:n
             if type=="hard"
-                ac2d[i][j] = HardThreshold(ac2d[i][j], t)
+                HardThreshold!(y[i][j], t)
             elseif type=="soft"
-                ac2d[i][j] = SoftThreshold(ac2d[i][j], t)
+                SoftThreshold!(y[i][j], t)
             end
         end
     end
-    return ac2d
+    return y
 end
 
 end # module
