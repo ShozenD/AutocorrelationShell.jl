@@ -18,7 +18,7 @@ Transforms the output of ac2d into a 1-D vector
 """
 function ac2d_flatten(x)
     y = [reduce(hcat, x[i]) for i in 1:size(x)[1]]
-    y = reduce(vcat, x)
+    y = reduce(vcat, y)
     return y[:]
 end
 
