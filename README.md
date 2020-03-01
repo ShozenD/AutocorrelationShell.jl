@@ -5,6 +5,8 @@ made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision
 
 ## Dependencies
 The required packages are
++ `SpecialFunctions`
++ `Reexport`
 + `DSP`
 + `StatsBase`
 + `Wavelets`
@@ -18,8 +20,8 @@ using PackageName
 ## Usage
 Load the autocorrelation module
 ```{julia}
-include("./autocorrelation-shell.jl")
-using .AutocorrelationShell
+include("./src/AutocorrelationShell.jl")
+using Main.AutocorrelationShell
 ```
 
 ## 1D Autocorrelation Wavelet Transform
