@@ -71,4 +71,49 @@ function ac2d(x,L,P,Q)
    return twodim
 end
 
+
+function rowinv(x)
+"""
+    rowinv(x)
+Performs iwt_ac on rows for one scale.
+
+# Arguments
+- `x`:
+"""
+    n_scale=length(x)
+    num_row,num_col=size(x[1])
+    a = [Array{Float64}(undef,num_row,n_scale) for i=1:num_col]
+    for i=1:num_row
+        for j=1:n_scale
+            a[i][:,j]=x[j][i,:]
+        end
+    end
+    b=[iwt_ac(a[i]) for i=1:length(a)]
+    return transpose(reduce(hcat,b))
+end
+
+
+
+function iac2d(ac)
+"""
+    iac2d(ac)
+
+Performs the inverse 2D autocorrelation wavelet transform.
+
+# Arguments
+- `ac`: ac2d function output
+"""
+    tmp = [rowinv(ac[i]) for i=1:length(ac)]
+    n_scale=length(tmp)
+    num_row,num_col=size(tmp[1])
+    a = [Array{Float64}(undef,num_row,n_scale) for i=1:num_col]
+    for i=1:num_row
+        for j=1:n_scale
+            a[i][:,j]=tmp[j][:,i]
+        end
+    end
+    b=[iwt_ac(a[i]) for i=1:length(a)]
+    return reduce(hcat,b)
+end
+
 end # module
