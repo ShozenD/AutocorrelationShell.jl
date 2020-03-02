@@ -1,7 +1,9 @@
 module AC2D
 export
     # 2D forward autocorrelation wavelet transform
-    ac2d
+    ac2d,
+    # inverse 2D autocorrelation wavelet transform
+    iac2d
 using ..AC1D
 
 """
@@ -71,14 +73,15 @@ function ac2d(x,L,P,Q)
    return twodim
 end
 
-
+# ------------ Inverse functions -------------
 function rowinv(x)
 """
     rowinv(x)
-Performs iwt_ac on rows for one scale.
+Performs iwt_ac on rows of each element of the input
+vector.
 
 # Arguments
-- `x`:
+- `x`: one element of the ac2d function output vector
 """
     n_scale=length(x)
     num_row,num_col=size(x[1])
