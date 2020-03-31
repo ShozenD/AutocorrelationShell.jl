@@ -50,7 +50,7 @@ function ac2d(x, L, P, Q)
     num_row, num_col = size(x)
     J = trunc(Integer, log2(num_col))
     D = J - L + 1
-    accoef_matrix_3d = ac1d_col(img, L, P, Q)
+    accoef_matrix_3d = ac1d_col(x, L, P, Q)
     accoef_matrix_4d = Array{Float64, 4}(undef, D, num_row, D, num_col)
     for i in 1:D
         accoef_matrix_4d[i,:,:,:] = ac1d_col(accoef_matrix_3d[:,i,:],L,P,Q)
@@ -80,8 +80,6 @@ vector.
     b=[iwt_ac(a[i]) for i=1:length(a)]
     return transpose(reduce(hcat,b))
 end
-
-
 
 function iac2d(ac)
 """
