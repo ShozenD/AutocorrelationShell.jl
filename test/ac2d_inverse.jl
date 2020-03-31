@@ -1,5 +1,4 @@
 # --- Implement inverse ac2d ---
-
 # Import packages
 using Pkg, Plots, Wavelets, LinearAlgebra, FileIO, Images
 
@@ -8,43 +7,37 @@ using Main.AutocorrelationShell
 
 # Load test image
 img = load("./test/pictures/lenna.jpg")
-img = img = Float64.(Gray.(img))
+img = Float64.(Gray.(img))
 
 # Instanciate Wavelets
 H = wavelet(WT.db2)
-L = 4
+L = 2
 Q = qfilter(H)
 P = pfilter(H)
 
 # Perform decomposition
 decomp = ac2d(img, L, P, Q)
 
-# Implement inverse ac2d
-function inv_ac2d(ac2d)
-    """
-        inv_ac2d(ac2d)
-
-        Recreates the original 2D signal from the coeficients produced by ac2d function.
-
-        # Arguments
-        `ac2d`: The output of ac2d i.e. vector autocorrelation wavelet transform coefficients.
-    """
-    n = size(ac2d)[1]
-    y = deepcopy(ac2d[n][n]) # Deepcopy finest scale
-    for i in 1:n-1
-        yi = deepcopy(ac2d[i][n])
-        for j in 1:n-1
-            yi = (yi + ac2d[i][j]) / sqrt(2)
+function iac2d_matrix(x)
+    num_row, num_col, D_row, D_col = size(x)
+    accoef_matrix_4d = permutedims(x, [3,2,4,1])
+    accoef_matrix_3d = Array{Float64, 3}(undef, num_col, D_col, num_row)
+    for i in 1:D_row
+        for j in 1:num_row
+            accoef_matrix_3d[:,i,j] = iwt_ac(accoef_matrix_4d[i,:,:,j])
         end
-        y = (y + yi) / sqrt(2)
     end
-    return y
+    reconst = Array{Float64, 2}(undef, 512, 512)
+    for i in 1:num_col
+        reconst[:,i] = iwt_ac(accoef_matrix_3d[:,:,i])
+    end
+    return reconst
 end
 
-reconst = inv_ac2d(decomp)
+reconst = iac2d_matrix(decomp)
 
 # Compute difference between original image
-norm(reconst-img) / norm(img)
+norm(reconst[:]-img[:]) / norm(img[:])
 
 # Compare visually
 heatmap(img)
