@@ -11,48 +11,23 @@ using ..AC1D
 
 Computes the column wise 1D fwt_ac coeficients for 2D signals.
 
-# Arguments
+### Arguments
 - `x`: 2D signal (n ,m) matrix
 - `L`: Decomposition level
 - `P`: Low AC shell filter
 - `Q`: High AC shell filter
-"""
-function ac1d_col(x,L,P,Q)
-  num_row, num_col = size(x)
-  accoef_arr = [fwt_ac(x[:,i],L,P,Q) for i=1:num_col]
-  n_scale = size(accoef_arr[1])[2]
-  a = [Array{Float64}(undef,num_row,num_col) for i=1:n_scale]
-  for i = 1:n_scale
-      for j = 1:length(accoef_arr)
-          a[i][:,j] = accoef_arr[j][:,i]
-      end
-  end
-  return a
-end
 
+Returns a multidimensional array of (num_col, levels_of_decomposition)
 """
-  ac1d_row(x, L, P, Q)
-
-Computes the row wise 1D fwt_ac coeficients for 2D signals.
-
-# Arguments
-- `x`: 2D signal (n ,m) matrix
-- `L`: Decomposition level
-- `P`: Low AC shell filter
-- `Q`: High AC shell filter
-"""
-function ac1d_row(x,L,P,Q)
-   xt = transpose(x)
-   num_row,num_col=size(xt)
-   accoef_arr = [fwt_ac(xt[:,i],L,P,Q) for i=1:num_col]
-   n_scale = size(accoef_arr[1])[2]
-   a = [Array{Float64}(undef,num_row,num_col) for i=1:n_scale]
-   for i in 1:n_scale
-       for j in 1:length(accoef_arr)
-           a[i][j,:] = accoef_arr[j][:,i]
-       end
-   end
-   return a
+function ac1d_col(x, L, P, Q)
+    num_row, num_col = size(x)
+    J = trunc(Integer, log2(num_col))
+    D = J - L + 1
+    accoef_matrix_3d = Array{Float64, 3}(undef, num_col, D, num_col)
+    for i in 1:num_col
+        accoef_matrix_3d[:,:,i] = fwt_ac(img[:,i],L,P,Q)
+    end
+    return accoef_matrix_3d
 end
 
 # ------- Two dimensional functions --------
@@ -61,16 +36,27 @@ end
 
 Computes autocorrelation wavelet coeficients for 2D signals.
 
-# Arguments
+### Arguments
 - `x`: 2D signals (n ,m) matrix
 - `L`: Decomposition level
 - `P`: Low AC shell filter
 - `Q`: High AC shell filter
+
+Returns a the multidimensional matrix of
+(num_rows, num_cols, levels_of_decomp, levels_of_decomp) that stores
+the coefficients of the decomposed image.
 """
-function ac2d(x,L,P,Q)
-   onedim = ac1d_col(x,L,P,Q)
-   twodim = [ac1d_row(i,L,P,Q) for i in onedim]
-   return twodim
+function ac2d(x, L, P, Q)
+    num_row, num_col = size(x)
+    J = trunc(Integer, log2(num_col))
+    D = J - L + 1
+    accoef_matrix_3d = ac1d_col(img, L, P, Q)
+    accoef_matrix_4d = Array{Float64, 4}(undef, D, num_row, D, num_col)
+    for i in 1:D
+        accoef_matrix_4d[i,:,:,:] = ac1d_col(accoef_matrix_3d[:,i,:],L,P,Q)
+    end
+    accoef_matrix_4d = permutedims(accoef_matrix_4d, [2,4,1,3])
+    return accoef_matrix_4d
 end
 
 # ------------ Inverse functions -------------
