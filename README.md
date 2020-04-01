@@ -64,6 +64,14 @@ wiggle(decomposition, Overlap = false)
 # Forward Autocorrelation Wavelet Transform
 ac2d(img,L,P,Q)
 ```
+The `ac2d` function performs a forward wavelet transformation on 2D signals such as images. It returns a 4 dimensional tensor(multidimensional array) with the dimensions (num_row, num_col, levels_of_decomp_row, levels_of_decomp_col).
+
+```{julia}
+# Inverse Autocorrelation Wavelet Transform
+iac2d(decomp)
+```
+The `iac2d` function is the opposite of the `ac2d` function. It takes a transformed signal (i.e. the output of `ac2d`) and reverts it to the original signal.
+
 ### Example
 ```{julia}
 H = wavelet(WT.db2)
@@ -76,17 +84,9 @@ img = Float64.(Gray.(img))
 
 decomposition = ac2d(img,L,P,Q)
 
-using Plots
-function ac2d_heatmap(ac2d)
-    x = [reduce(hcat, ac2d[i]) for i in 1:size(ac2d)[1]]
-    x = reduce(vcat, x)
-    x = abs.(x) # Ensure that there are no negative values
-    x = log.(x)
-    heatmap(x)
-end
+# Display the 6th row and column decomposition
+ac2d_heatmap(decomposition[:,:,6,6])
 
-ac2d_heatmap(decomp)
+# Revert to original signal
+reconstruct = iac2d(decomposition)
 ```
-
-### Result:
-![Result](Presentation/lenna_ac2d_heatmap.png)
