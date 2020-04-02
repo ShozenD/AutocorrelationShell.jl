@@ -48,16 +48,11 @@ end
     `t`: threshold value.
 """
 function acthreshold(x, type, t::Real)
-    n = size(x)[1]
-    y = deepcopy(x) # to prevent inplace but slows speed. 
-    for i in 1:n
-        for j in 1:n
-            if type=="hard"
-                HardThreshold!(y[i][j], t)
-            elseif type=="soft"
-                SoftThreshold!(y[i][j], t)
-            end
-        end
+    y = deepcopy(x) # to prevent inplace behavior but slows speed
+    if type=="hard"
+        HardThreshold!(y, t)
+    elseif type=="soft"
+        SoftThreshold!(y, t)
     end
     return y
 end
