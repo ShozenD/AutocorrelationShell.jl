@@ -5,7 +5,8 @@ export
     # modify image
     make_noisy,
     # signal to noise ratio
-    snr
+    snr,
+    get_snr
 using Random
 using LinearAlgebra
 
