@@ -9,6 +9,8 @@ export
     get_snr
 using Random
 using LinearAlgebra
+using ..ACThreshold
+using ..AC2D
 
 """
     make_noisy(x, rng, a)
