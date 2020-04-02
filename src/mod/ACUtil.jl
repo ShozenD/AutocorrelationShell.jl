@@ -10,19 +10,6 @@ using Random
 using LinearAlgebra
 
 """
-    ac2d_flatten(x)
-
-Transforms the output of ac2d into a 1-D vector
-### Arguments
-`x`: ac2d function output
-"""
-function ac2d_flatten(x)
-    y = [reduce(hcat, x[i]) for i in 1:size(x)[1]]
-    y = reduce(vcat, y)
-    return y[:]
-end
-
-"""
     make_noisy(x, rng, a)
 
 Adds gaussian white noise to an image.
