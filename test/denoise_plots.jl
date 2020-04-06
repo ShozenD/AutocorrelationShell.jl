@@ -21,7 +21,8 @@ end
 """
     threshold_snr(img,L,P,Q,noise,step_size,type)
 
-Thresholds coefficients
+Thresholds coefficients of a noisy image using soft
+or hard thresholding at various threshold levels.
 ### Arguments
 `img`: image
 `L`: decomposition level
@@ -133,19 +134,8 @@ P = pfilter(H)
 plot_list=[threshold_snr_plot(img_list[i],0.1,0.7,0.1) for i=1:length(img_list)]
 airplane,baboon,barbara,boat,fruits,girlface,goldhill,lenna,peppers,wave = plot_list
 
-plotly()
-plot_titles=["Airplane" "Baboon" "Barbara" "Boat" "Fruits" "Girlface" "Goldhill" "Lenna" "Peppers" "Wave"]
-plot(airplane,baboon,barbara,boat,fruits,
-    girlface,goldhill,lenna,peppers,wave,
-    layout=(2,5),
-    title=plot_titles,
-    size=(1200,500),
-    legend=false)
-gui()
-
 # Create a figure of subplots of threshold vs. snr plots
 using Plots.PlotMeasures
-
 font1 = Plots.font("Helvetica", 12)
 font2 = Plots.font("Helvetica", 7)
 airplane_leg=threshold_snr_plot_leg(img_list[1],0.1,0.7,0.1)
