@@ -1,5 +1,5 @@
 using Plots, Wavelets, LinearAlgebra, Statistics, Random, FileIO
-include("../RTG_2019/autocorrelation-shell/src/AutocorrelationShell.jl")
+include("../src/AutocorrelationShell.jl")
 using Main.AutocorrelationShell
 
 """
