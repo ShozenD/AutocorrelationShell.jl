@@ -1,7 +1,5 @@
 module ACUtil
 export
-    # modify ac2d output
-    ac2d_flatten,
     # modify image
     make_noisy,
     # signal to noise ratio
