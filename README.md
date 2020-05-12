@@ -30,14 +30,14 @@ using Main.AutocorrelationShell
 fwt_ac(x,L,P,Q)
 
 # Inverse Autocorrelation Wavelet Transform
-iwt_ac(y)
+iwt_ac(decomp)
 ```
 
 ### Example
 Load the `Plots` package and the `wiggle` function
 ```{julia}
 using Plots
-include("./wiggle.jl")
+include("./test/wiggle.jl")
 ```
 
 Perform forward autocorrelation wavelet transform on the vector x
@@ -62,7 +62,7 @@ wiggle(decomposition, Overlap = false)
 ## 2D Autocorrelation Wavelet Transform
 ```{julia}
 # Forward Autocorrelation Wavelet Transform
-ac2d(img,L,P,Q)
+ac2d(img,L_row,L_col,P,Q)
 ```
 The `ac2d` function performs a forward wavelet transformation on 2D signals such as images. It returns a 4 dimensional tensor(multidimensional array) with the dimensions (num_row, num_col, levels_of_decomp_row, levels_of_decomp_col).
 
@@ -75,14 +75,15 @@ The `iac2d` function is the opposite of the `ac2d` function. It takes a transfor
 ### Example
 ```{julia}
 H = wavelet(WT.db2)
-L = 2
+L_row = 2
+L_col = 2
 Q = qfilter(H)
 P = pfilter(H)
 
 img = load(../test/pictures/lenna.jpg)
 img = Float64.(Gray.(img))
 
-decomposition = ac2d(img,L,P,Q)
+decomposition = ac2d(img,L_row,L_col,P,Q)
 
 # Display the 6th row and column decomposition
 ac2d_heatmap(decomposition[:,:,6,6])
