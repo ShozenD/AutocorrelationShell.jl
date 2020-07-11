@@ -80,7 +80,7 @@ function ac2d(x, L_row, L_col, P, Q)
     accoef_matrix_3d = ac1d_col(x, L_col, P, Q)
     accoef_matrix_4d = Array{Float64, 4}(undef, D_col, num_col, D_row, num_row)
     for i in 1:D_col
-        accoef_matrix_4d[i,:,:,:] = ac1d_row(accoef_matrix_3d[:,i,:], L_row,P,Q)
+        accoef_matrix_4d[i,:,:,:] = ac1d_row(accoef_matrix_3d[:,i,:],L_row,P,Q)
     end
     accoef_matrix_4d = permutedims(accoef_matrix_4d, [4,2,3,1])
     return accoef_matrix_4d

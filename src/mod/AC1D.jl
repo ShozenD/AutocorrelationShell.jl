@@ -1,6 +1,7 @@
 module AC1D
 export
     # wavelet transforms
+    ac1d,
     fwt_ac,
     iwt_ac,
     # filters
@@ -316,6 +317,13 @@ function inv_ac_table(table, basis)
     end
 
     return tab2[:, 1]'
+end
+
+function ac1d(x; L, P, Q)
+"""
+    wrapper for the fwt_ac function
+"""
+    return fwt_ac(x, L, P, Q)
 end
 
 end # module
