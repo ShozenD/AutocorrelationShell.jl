@@ -57,7 +57,7 @@ wiggle(decomposition, Overlap = false)
 
 ### Result:
 
-![Result](Presentation/auto_decomposition.png)
+![Result](Presentations/2019/auto_decomposition.png)
 
 ## 2D Autocorrelation Wavelet Transform
 ```{julia}
