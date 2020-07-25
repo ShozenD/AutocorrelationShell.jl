@@ -5,17 +5,12 @@ made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision
 
 ## Dependencies
 The required packages are
-+ `SpecialFunctions`
-+ `Reexport`
++ `AbstractTrees`
 + `DSP`
++ `Reexport`
++ `SpecialFunctions`
 + `StatsBase`
 + `Wavelets`
-
-Here is an example of how to install a package via the package manager and load with `using`
-```{julia}
-Pkg.add("PackageName")
-using PackageName
-```
 
 ## Usage
 Load the autocorrelation module
@@ -66,6 +61,8 @@ ac2d(img,L_row,L_col,P,Q)
 ```
 The `ac2d` function performs a forward wavelet transformation on 2D signals such as images. It returns a 4 dimensional tensor(multidimensional array) with the dimensions (num_row, num_col, levels_of_decomp_row, levels_of_decomp_col).
 
+![AC2D transform example](Presentations/ac2d_decomp_heatmap.png)
+
 ```{julia}
 # Inverse Autocorrelation Wavelet Transform
 iac2d(decomp)
@@ -90,4 +87,37 @@ ac2d_heatmap(decomposition[:,:,6,6])
 
 # Revert to original signal
 reconstruct = iac2d(decomposition)
+```
+
+## Autocorrelation Wavelet Packet Transform
+```{julia}
+# Autocorrelation Wavelet Packets Transform
+acwpt(x, P, Q)
+```
+The `acwpt` function computes the autocorrelation wavelet packet transform for 1 dimensional signal. It returns a binary tree object where the root node contains the original signal, and each child node contains a vector of 1 dimensional autocorrelation wavelet transform coefficients.
+
+![AC Wavelet Packet Transform Diagram](Presentations/2019/acwpt_diagram.png)
+
+### Example
+```{julia}
+H = wavelet(WT.db2)
+L_row = 2
+L_col = 2
+Q = qfilter(H)
+P = pfilter(H)
+
+using Random, Wavelets, AbstractTrees
+rng = MersenneTwister(123);
+
+X₁ = randn(rng, 4); # length 4 random signal
+H = wavelet(WT.db2);
+Q = qfilter(H);
+P = pfilter(H);
+decomp = acwpt(X₁, P, Q)
+
+# Print the tree in the console
+print_tree(decomp)
+
+# Gather all nodes into a vector
+collect(PostOrderDFS(decomp))
 ```
