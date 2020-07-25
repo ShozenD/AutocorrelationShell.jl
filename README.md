@@ -96,7 +96,7 @@ acwpt(x, P, Q)
 ```
 The `acwpt` function computes the autocorrelation wavelet packet transform for 1 dimensional signal. It returns a binary tree object where the root node contains the original signal, and each child node contains a vector of 1 dimensional autocorrelation wavelet transform coefficients.
 
-![AC Wavelet Packet Transform Diagram](Presentations/2019/acwpt_diagram.png)
+![AC Wavelet Packet Transform Diagram](Presentations/acwpt_diagram.png)
 
 ### Example
 ```{julia}
