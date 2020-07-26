@@ -61,7 +61,7 @@ ac2d(img,L_row,L_col,P,Q)
 ```
 The `ac2d` function performs a forward wavelet transformation on 2D signals such as images. It returns a 4 dimensional tensor(multidimensional array) with the dimensions (num_row, num_col, levels_of_decomp_row, levels_of_decomp_col).
 
-![AC2D transform example](Presentations/ac2d_decomp_heatmap.png)
+![AC2D transform example](Presentations/Other/ac2d_decomp_heatmap.png)
 
 ```{julia}
 # Inverse Autocorrelation Wavelet Transform
@@ -96,7 +96,7 @@ acwpt(x, P, Q)
 ```
 The `acwpt` function computes the autocorrelation wavelet packet transform for 1 dimensional signal. It returns a binary tree object where the root node contains the original signal, and each child node contains a vector of 1 dimensional autocorrelation wavelet transform coefficients.
 
-![AC Wavelet Packet Transform Diagram](Presentations/acwpt_diagram.png)
+![AC Wavelet Packet Transform Diagram](Presentations/Other/acwpt_diagram.png)
 
 ### Example
 ```{julia}
