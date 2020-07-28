@@ -10,7 +10,8 @@ export
     # others
     autocorr,
     ac_filter,
-    autocorr_calc
+    autocorr_calc,
+    dyadlength
 
 using DSP
 using StatsBase
