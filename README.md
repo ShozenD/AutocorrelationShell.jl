@@ -1,7 +1,8 @@
 # AutocorrelationShell.jl
 
-This library is an implementation of autocorrelation wavelets in Julia. It was
-made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision of Professor Naoki Saito at UC Davis.
+This package is a [Julia](https://github.com/JuliaLang/julia) implementation of autocorrelation wavelets. The package includes the 1D autocorrelation wavelet transform, 2D autocorrelation wavelet transform, and autocorrelation wavelet packet transform.
+
+Signal representations using autocorrelation wavelets are redundant and non-orthogonal. Some desirable properties of autocorrelation wavelet transforms are symmetry without losing vanishing moments, edge detection and characterization capabilities, and shift invariance. Autocorrelation wavelets can be used as a tool for data analysis such as time series analysis and image analysis.
 
 ## Dependencies
 The required packages are
@@ -21,10 +22,10 @@ using Main.AutocorrelationShell
 
 ## 1D Autocorrelation Wavelet Transform
 ```{julia}
-# Forward Autocorrelation Wavelet Transform
+# Forward 1D Autocorrelation Wavelet Transform
 fwt_ac(x,L,P,Q)
 
-# Inverse Autocorrelation Wavelet Transform
+# Inverse 1D Autocorrelation Wavelet Transform
 iwt_ac(decomp)
 ```
 
@@ -50,13 +51,13 @@ decomposition = fwt_ac(x,L,P,Q)
 wiggle(decomposition, Overlap = false)
 ```
 
-### Result:
+Result:
 
 ![Result](Presentations/2019/Overleaf/auto_decomposition.png)
 
 ## 2D Autocorrelation Wavelet Transform
 ```{julia}
-# Forward Autocorrelation Wavelet Transform
+# Forward 2D Autocorrelation Wavelet Transform
 ac2d(img,L_row,L_col,P,Q)
 ```
 The `ac2d` function performs a forward wavelet transformation on 2D signals such as images. It returns a 4 dimensional tensor(multidimensional array) with the dimensions (num_row, num_col, levels_of_decomp_row, levels_of_decomp_col).
@@ -64,7 +65,7 @@ The `ac2d` function performs a forward wavelet transformation on 2D signals such
 <img src="Presentations/Other/ac2d_decomp_heatmap.png" alt="AC2D transform example" width="600" />
 
 ```{julia}
-# Inverse Autocorrelation Wavelet Transform
+# Inverse 2D Autocorrelation Wavelet Transform
 iac2d(decomp)
 ```
 The `iac2d` function is the opposite of the `ac2d` function. It takes a transformed signal (i.e. the output of `ac2d`) and reverts it to the original signal.
@@ -91,7 +92,7 @@ reconstruct = iac2d(decomposition)
 
 ## Autocorrelation Wavelet Packet Transform
 ```{julia}
-# Autocorrelation Wavelet Packets Transform
+# Autocorrelation Wavelet Packet Transform
 acwpt(x, P, Q)
 ```
 The `acwpt` function computes the autocorrelation wavelet packet transform for 1 dimensional signal. It returns a binary tree object where the root node contains the original signal, and each child node contains a vector of 1 dimensional autocorrelation wavelet transform coefficients.
@@ -115,3 +116,6 @@ print_tree(decomp)
 # Gather all nodes into a vector
 collect(PostOrderDFS(decomp))
 ```
+
+## Authors
+This package was made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision of Professor Naoki Saito at University of California, Davis.
