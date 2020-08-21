@@ -7,6 +7,10 @@ X₁ = randn(rng, 4); # length 4 random signal
 H = wavelet(WT.db2);
 Q = qfilter(H);
 P = pfilter(H);
+
+decomp = acwt(X₁, L=1, Q=Q, P=P)
+iacwt(decomp)
+
 decomp = acwpt(X₁, P, Q)
 
 # Print the tree in the console

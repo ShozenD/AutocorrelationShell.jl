@@ -18,7 +18,9 @@ L = 4
 Q = qfilter(H)
 P = pfilter(H)
 
-ac_noisy = ac2d(noisy, L, P, Q)
+ac_noisy = ac2d(noisy, L, L, P, Q)
+acwt2D(noisy; P=P, Q=Q)
+iacwt2D(ac_noisy)
 
 heatmap(ac_noisy[:,:,5,5])
 

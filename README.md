@@ -8,6 +8,7 @@ Signal representations using autocorrelation wavelets are redundant and non-orth
 The required packages are
 + `AbstractTrees`
 + `DSP`
++ `LinearAlgebra`
 + `Reexport`
 + `SpecialFunctions`
 + `StatsBase`

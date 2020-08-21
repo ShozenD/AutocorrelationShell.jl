@@ -1,7 +1,8 @@
 module AC1D
 export
     # wavelet transforms
-    ac1d,
+    acwt,
+    iacwt,
     fwt_ac,
     iwt_ac,
     # filters
@@ -57,7 +58,7 @@ function translate(x, to)
     return circshift(x, -to)
 end
 
-function dyadlength(x)
+function dyadlength(x::Vector{<:Number})
 """
 	dyadlength(x)
 
@@ -198,70 +199,57 @@ function ac_filter(x, filter)
     return d[1:n]
 end
 
-function iwt_ac(acwt)
+function iwt_ac(acwt::AbstractArray{<:Number})
 """
 	iwt_ac(acwt)
 
-	Performs the 1D autocorrelation decomposition (inverse)
+Performs the 1D autocorrelation decomposition (inverse)
 """
     y = deepcopy(acwt[:, 1])
     n, m = size(acwt)
-    for i = 2:m
-        y = (y + acwt[:, i]) / sqrt(2)
+    @inbounds begin
+        for i = 2:m
+            y = (y + acwt[:, i]) / sqrt(2)
+        end
     end
     return y
 end
 
-function fwt_ac(x,L,P,Q)
 """
 	fwt_ac(x,L,P,Q)
 
-	Computes the forward autocorrelation wavelet transform
+Computes the forward autocorrelation wavelet transform
 
-	# Arguments
-	- `x`: array to transform
-	- `L`: degree of coarsest scale
-	- `P`: Low AC shell filter
-	- `Q`: High AC shell filter
+# Arguments
+- `x::Vector{<:Real}`: array to transform
+- `L::Integer`: degree of coarsest scale
+- `P::Vector{<:Real}`: Low AC shell filter
+- `Q::Vector{<:Real}`: High AC shell filter
 """
+function fwt_ac(x::Vector{T}, L::Integer, P::Vector{T}, Q::Vector{T}) where T<:Number
+
 	n = length(x)
 	J = dyadlength(x)
+
+    @assert L > 0
+    @assert L <= J
+
 	D = J-L
 	wp = zeros(n,D+1)
-	# x = reshape(x,(1,length(x)))
 
 	wp[:,1] = x
-	for d=0:(D-1)
-		for b=0:(2^d-1)
-		   s = wp[echant(n,d,b),1]
-		   h = ac_filter(s,Q)
-		   l = ac_filter(s,P)
-		   wp[echant(n,d,b),D+1-d] = h
-		   wp[echant(n,d,b),1] = l
-		 end
-	end
+    @inbounds begin
+    	for d=0:(D-1)
+    		for b=0:(2^d-1)
+    		   s = wp[echant(n,d,b),1]
+    		   h = ac_filter(s,Q)
+    		   l = ac_filter(s,P)
+    		   wp[echant(n,d,b),D+1-d] = h
+    		   wp[echant(n,d,b),1] = l
+    		 end
+    	end
+    end
 	return wp
-end
-
-function thresh0(acwt, th, hard=false)
-"""
-	thresh0(acwt, th, hard=false)
-
-	Thresholds a computed signal decomposition (`acwt`) to threshold `th`. Either hard or soft (default) thresholding can be used
-"""
-	n, m = size(acwt)
-	res=zeros(n,m)
-	res[:,1]=acwt[:,1]
-	if hard
-		for i=2:m
-			res[:,i] = threshold(acwt[:,i],HardTH(),th)
-		end
-	else
-		for i=2:m
-			res[:,i] = threshold(acwt[:,i],SoftTH(),th)
-		end
-	end
-	return res
 end
 
 function autocorr_calc(R, w::OrthoFilter, L)
@@ -320,11 +308,31 @@ function inv_ac_table(table, basis)
     return tab2[:, 1]'
 end
 
-function ac1d(x; L, P, Q)
 """
-    wrapper for the fwt_ac function
+    acwt(x, L, P, Q)
+
+Computes the forward autocorrelation wavelet transform. Wrapper for the fwt_ac function.
+
+# Arguments
+- `x::Vector{<:Real}`: array to transform.
+- `L::Integer`: degree of coarsest scale. *default*: 1.
+- `P::Vector{<:Real}`: Low AC shell filter.
+- `Q::Vector{<:Real}`: High AC shell filter.
 """
+function acwt(x::Vector{T}; L::Integer=1, P::Vector{T}, Q::Vector{T}) where T<:Real
     return fwt_ac(x, L, P, Q)
+end
+
+"""
+    iacwt(acwt)
+
+Inverse autocorrelation wavelet transform(signal reconstruction). Wrapper for the iwt_ac function.
+
+# Arguments
+- `acwt::AbstractArray{<:Number}`: Array of wavelet coefficients.
+"""
+function iacwt(acwt::AbstractArray{<:Number})
+    return iwt_ac(acwt)
 end
 
 end # module

@@ -4,6 +4,7 @@ export
     acwpt
 
 using AbstractTrees
+using Wavelets
 using ..AC1D
 using ..ACUtil
 
