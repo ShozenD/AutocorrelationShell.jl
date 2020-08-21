@@ -4,8 +4,13 @@ export
     make_noisy,
     # signal to noise ratio
     snr,
-    get_snr
+    get_snr,
+    # entropy
+    wentropy,
+    NormEntropy,
+    ThresholdEntropy
 using Random
+using Wavelets
 using LinearAlgebra
 using ..ACThreshold
 using ..AC2D
@@ -88,6 +93,56 @@ function get_snr(y, x, type, step)
         println(i/round(max_coef) * 100)
     end
     return coef_ratio_list, snr_list
+end
+
+## Entropy functions
+# ENTROPY TYPES
+
+# Extend Wavetes.Entropy to include norm and threshold entropy methods
+struct NormEntropy <: Wavelets.Entropy end
+struct ThresholdEntropy <: Wavelets.Entropy end # Should we implement?
+
+# Entropy measures: Additive with wentropy(0) = 0
+# all coefs assumed to be on [-1,1] after normalization with nrm
+# given x and y, where x has "more concentrated energy" than y
+# then coefentropy(x, et, norm) <= coefentropy(y, et, norm) should be satisfied.
+
+# (non-normalized) Shannon Entropy
+function wentropy(x::T, et::Wavelets.ShannonEntropy, nrm::T)  where T<:AbstractFloat
+    s = (x/nrm)^2
+    if s == 0.0
+        return -zero(T)
+    else
+        return -s*log(s)
+    end
+end
+
+# log energy entropy
+function wentropy(x::T, et::Wavelets.LogEnergyEntropy, nrm::T) where T<:AbstractFloat
+    s = (x/nrm)^2
+    if s == 0.0
+        return -zero(T)
+    else
+        return -log(s)
+    end
+end
+
+function wentropy(x::T, et::NormEntropy, nrm::T, p::Integer=1) where T<:AbstractFloat
+    # If we normalize using L2 norm the total entropy would always be 1
+    # Need to compromise
+    #s = (x/nrm)^2
+    s = (x/nrm)^2
+    return norm(s, p)
+end
+
+function wentropy(x::AbstractArray{T}, et::Wavelets.Entropy, nrm::T=norm(x)) where T<:AbstractFloat
+    @assert nrm >= 0
+    sum = zero(T)
+    nrm == sum && return sum
+    for i in eachindex(x)
+        @inbounds sum += wentropy(x[i], et, nrm)
+    end
+    return sum
 end
 
 end # module
