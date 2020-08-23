@@ -122,12 +122,19 @@ function autocorr(f::OrthoFilter)
     return autocorr(WT.qmf(f))
 end
 
-function pfilter(filter::OrthoFilter)
 """
-	Pfilter(filter::OrthoFilter)
+    pfilter(filter::OrthoFilter)
 
-	Computes the autocorrelation low filter
+Computes the low AC filter.
+
+# Example
+```julia
+using Wavelets
+H = wavelet(WT.db2)
+P = pfilter(H)
+```
 """
+function pfilter(filter::OrthoFilter)
     a = autocorr(filter)
     c1 = 1 / sqrt(2)
     c2 = c1 / 2
@@ -135,12 +142,19 @@ function pfilter(filter::OrthoFilter)
     return vcat(b[end:-1:1], c1, b)
 end
 
-function qfilter(filter::OrthoFilter)
 """
-	Qfilter(filter::OrthoFilter)
+	qfilter(filter::OrthoFilter)
 
-	Computes the autocorrelation high filter
+Computes the high AC filter.
+
+# Example
+```julia
+using Wavelets
+H = wavelet(WT.db2)
+Q = qfilter(H)
+```
 """
+function qfilter(filter::OrthoFilter)
     a = autocorr(filter)
     c1 = 1 / sqrt(2)
     c2 = c1 / 2
@@ -289,15 +303,29 @@ function inv_ac_table(table, basis)
 end
 
 """
-    acwt(x, L, P, Q)
+    acwt(x; L, P, Q)
 
 Computes the forward autocorrelation wavelet transform. Wrapper for the fwt_ac function.
 
 # Arguments
 - `x::Vector{<:Real}`: array to transform.
-- `L::Integer`: degree of coarsest scale. *default*: 1.
+- `L::Integer`: degree of coarsest scale. *default* = 1.
 - `P::Vector{<:Real}`: Low AC shell filter.
 - `Q::Vector{<:Real}`: High AC shell filter.
+
+# Example
+```julia
+using Wavelets
+
+H = wavelet(WT.db2)
+Q = qfilter(H)
+P = pfilter(H)
+
+x = zeros(256)
+x[128] = 1
+
+decomp = acwt(x; P=P, Q=Q)
+```
 """
 function acwt(x::Vector{T}; L::Integer=1, P::Vector{T}, Q::Vector{T}) where T<:Real
     return fwt_ac(x, L, P, Q)

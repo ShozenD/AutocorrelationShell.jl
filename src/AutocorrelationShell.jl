@@ -37,8 +37,11 @@ export
     NormEntropy,
     ThresholdEntropy,
 
+    # AC Wavelet Packets
     BinaryNode,
-    acwpt
+    acwpt,
+    aciwpt,
+    acwptBestBasisTree
 
 using
     AbstractTrees,

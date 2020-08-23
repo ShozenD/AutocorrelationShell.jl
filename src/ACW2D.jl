@@ -2,15 +2,13 @@
 """
   ac1d_col(x, L, P, Q)
 
-Computes the column wise forward ac wavelet coeficients for 2D signals.
+Computes the column wise forward ac wavelet coeficients for 2D signals. Returns a multidimensional array of (num_col, levels_of_decomposition).
 
 ### Arguments
 - `x`: 2D signal (n ,m) matrix
 - `L`: Decomposition level
 - `P`: Low AC shell filter
 - `Q`: High AC shell filter
-
-Returns a multidimensional array of (num_col, levels_of_decomposition)
 """
 function ac1d_col(x::AbstractArray{T}, L::Integer, P::Vector{T}, Q::Vector{T}) where T<:Number
     num_row, num_col = size(x)
@@ -33,15 +31,13 @@ end
 """
   ac1d_row(x, L, P, Q)
 
-Computes the row wise 1D fwt_ac coeficients for 2D signals.
+Computes the row wise 1D fwt_ac coeficients for 2D signals. Returns a multidimensional array of (num_col, levels_of_decomposition).
 
 ### Arguments
 - `x`: 2D signal (n ,m) matrix
 - `L`: Decomposition level
 - `P`: Low AC shell filter
 - `Q`: High AC shell filter
-
-Returns a multidimensional array of (num_col, levels_of_decomposition)
 """
 function ac1d_row(x::AbstractArray{T}, L::Integer, P::Vector{T}, Q::Vector{T}) where T<:Number
     num_row, num_col = size(x)
@@ -67,7 +63,8 @@ end
 """
   ac2d(x, L_row, L_col, P, Q)
 
-Computes autocorrelation wavelet coeficients for 2D signals.
+Computes autocorrelation wavelet coeficients for 2D signals. Returns a tensor (num_rows, num_cols, levels_of_decomp, levels_of_decomp)
+that stores the coefficients of the decomposed signal.
 
 ### Arguments
 - `x`: 2D signals (n ,m) matrix
@@ -75,10 +72,6 @@ Computes autocorrelation wavelet coeficients for 2D signals.
 - `L_col`: Decomposition level of columns
 - `P`: Low AC shell filter
 - `Q`: High AC shell filter
-
-Returns a the multidimensional matrix of
-(num_rows, num_cols, levels_of_decomp, levels_of_decomp) that stores
-the coefficients of the decomposed image.
 """
 function ac2d(x::AbstractArray{T,2}, L_row::Integer, L_col::Integer, P::Vector{T}, Q::Vector{T}) where T<:Number
     num_row, num_col = size(x)
@@ -101,17 +94,15 @@ end
   acwt2d(x; L_row, L_col, P, Q)
 
 Computes autocorrelation wavelet coeficients for 2D signals. Wrapper for ac2d.
+Returns a the tensor of (num_rows, num_cols, levels_of_decomp, levels_of_decomp)
+that stores the coefficients of the decomposed signal. Wrapper for the ac2d function.
 
-### Arguments
+# Arguments
 - `x`: 2D signals (n ,m) matrix.
 - `L_row`: Decomposition level of rows. *default*: 1
 - `L_col`: Decomposition level of columns. *default*: 1
 - `P`: Low AC shell filter.
 - `Q`: High AC shell filter.
-
-Returns a the multidimensional matrix of
-(num_rows, num_cols, levels_of_decomp, levels_of_decomp) that stores
-the coefficients of the decomposed image.
 """
 function acwt2D(x::AbstractArray; L_row::Integer=1, L_col::Integer=1, P::Vector{T}, Q::Vector{T}) where T<:Number
     return ac2d(x, L_row, L_col, P, Q)

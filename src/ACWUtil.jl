@@ -2,34 +2,34 @@
     make_noisy(x, rng, a)
 
 Adds gaussian white noise to an image.
-### Arguments
-`x`: image
+
+# Arguments
+`x::AbstractArray{<:Number}`: image
 `rng`: random number generator ex) rng = MersenneTwister(123)
-`a`: A scaling parameter to adjust level of noise.
+`a::Float64`: A scaling parameter to adjust level of noise.
 """
-function make_noisy(x, rng, a::Real)
+function make_noisy(x::AbstractArray{<:Number}, rng, a::Float64)
     noisy = x + a * randn(rng, Float64, size(x))
     return noisy
 end
 
 """
-    snr(f::AbstractArray{<:Number}, g::AbstractArray{<:Number})
+    snr(f::AbstractArray{T}, g::AbstractArray{T}) where T<:Number
 
-Computes the signal to noise ratio between two signals.
-### Arguments
-`f`: Original signal
-`g`: Noisy signal
-### Returns
-signal to noise ratio(dB)
+Computes the signal to noise ratio between two signals. Returns signal to noise ratio(dB).
+
+# Arguments
+`f::AbstractArray{<:Number}`: Original signal
+`g::AbstractArray{<:Number}`: Noisy signal
 """
-function snr(f::AbstractArray{<:Number}, g::AbstractArray{<:Number})
+function snr(f::AbstractArray{T}, g::AbstractArray{T}) where T<:Number
     L2_f = norm(f)
     L2_fg = norm(f-g)
     return 20*log10(L2_f/L2_fg)
 end
 
 """
-    get_snr(y, x, type, step)
+    get_snr(y, x; type, step)
 
 Thresholds the wavelet coefficients matrix of a noisy signal, reconstructs it, then
 computes the signal to noise ratio between the reconstructed signal and the
@@ -59,10 +59,10 @@ P = pfilter(H)
 
 ac_noisy = ac2d(noisy, L, P, Q)
 
-coef_ratio, snr_list = get_snr(img, ac_noisy, "soft", 0.5)
+coef_ratio, snr_list = get_snr(img, ac_noisy, type="soft", step=0.5)
 ```
 """
-function get_snr(y, x, type, step)
+function get_snr(y::AbstractArray{T}, x::AbstractArray{T}; type::AbstractString="hard", step::Float64=0.5) where T<:Number
     max_coef = maximum(abs.(x)) # find largest coefficient
     num_coef = length(x)
     snr_list = zeros(0)
