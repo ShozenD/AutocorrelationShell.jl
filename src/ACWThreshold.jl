@@ -1,12 +1,3 @@
-module ACThreshold
-export
-    # threshold
-    acthreshold
-
-using Wavelets
-using LinearAlgebra
-using Statistics
-
 # hard
 function HardThreshold!(x::AbstractArray{<:Number}, t::Real)
     @assert t>=0
@@ -56,5 +47,3 @@ function acthreshold(x, type, t::Real)
     end
     return y
 end
-
-end # module

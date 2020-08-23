@@ -1,20 +1,3 @@
-module ACUtil
-export
-    # modify image
-    make_noisy,
-    # signal to noise ratio
-    snr,
-    get_snr,
-    # entropy
-    wentropy,
-    NormEntropy,
-    ThresholdEntropy
-using Random
-using Wavelets
-using LinearAlgebra
-using ..ACThreshold
-using ..AC2D
-
 """
     make_noisy(x, rng, a)
 
@@ -127,12 +110,9 @@ function wentropy(x::T, et::Wavelets.LogEnergyEntropy, nrm::T) where T<:Abstract
     end
 end
 
-function wentropy(x::T, et::NormEntropy, nrm::T, p::Integer=1) where T<:AbstractFloat
-    # If we normalize using L2 norm the total entropy would always be 1
-    # Need to compromise
-    #s = (x/nrm)^2
+function wentropy(x::T, et::NormEntropy, nrm::T; p::T=1) where T<:AbstractFloat
     s = (x/nrm)^2
-    return norm(s, p)
+    return s^p
 end
 
 function wentropy(x::AbstractArray{T}, et::Wavelets.Entropy, nrm::T=norm(x)) where T<:AbstractFloat
@@ -144,5 +124,3 @@ function wentropy(x::AbstractArray{T}, et::Wavelets.Entropy, nrm::T=norm(x)) whe
     end
     return sum
 end
-
-end # module

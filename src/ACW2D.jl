@@ -1,13 +1,3 @@
-module AC2D
-export
-    # 2D forward autocorrelation wavelet transform
-    ac2d,
-    acwt2D,
-    # inverse 2D autocorrelation wavelet transform
-    iac2d,
-    iacwt2D
-using ..AC1D
-
 ## One dimensional function
 """
   ac1d_col(x, L, P, Q)
@@ -169,5 +159,3 @@ Performs the inverse 2D autocorrelation wavelet transform.
 function iacwt2D(x::AbstractArray{<:Number})
     return iac2d(x)
 end
-
-end # module

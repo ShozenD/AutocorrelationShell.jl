@@ -1,13 +1,3 @@
-module ACWPT1D
-export
-    BinaryNode,
-    acwpt
-
-using AbstractTrees
-using Wavelets
-using ..AC1D
-using ..ACUtil
-
 ## Define base node object
 mutable struct BinaryNode{T}
     data::T
@@ -155,5 +145,3 @@ function acwptBestBasisTree(node::BinaryNode; direction::AbstractString="right",
         end
     end
 end
-
-end # module

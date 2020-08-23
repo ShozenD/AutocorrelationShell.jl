@@ -1,23 +1,3 @@
-module AC1D
-export
-    # wavelet transforms
-    acwt,
-    iacwt,
-    fwt_ac,
-    iwt_ac,
-    # filters
-    pfilter,
-    qfilter,
-    # others
-    autocorr,
-    ac_filter,
-    autocorr_calc,
-    dyadlength
-
-using DSP
-using StatsBase
-using Wavelets
-
 function conv_filt(a,b,sig)
     rst = zeros(size(sig))
     for i in eachindex(sig)
@@ -216,15 +196,15 @@ Performs the 1D autocorrelation decomposition (inverse)
 end
 
 """
-	fwt_ac(x,L,P,Q)
+	fwt_ac(x, L, P, Q)
 
-Computes the forward autocorrelation wavelet transform
+Computes the forward autocorrelation wavelet transform for a given signal.
 
 # Arguments
-- `x::Vector{<:Real}`: array to transform
-- `L::Integer`: degree of coarsest scale
-- `P::Vector{<:Real}`: Low AC shell filter
-- `Q::Vector{<:Real}`: High AC shell filter
+- `x::Vector{<:Number}`: Signal.
+- `L::Integer`: Degree of coarsest scale.
+- `P::Vector{<:Number}`: Low AC shell filter.
+- `Q::Vector{<:Number}`: High AC shell filter.
 """
 function fwt_ac(x::Vector{T}, L::Integer, P::Vector{T}, Q::Vector{T}) where T<:Number
 
@@ -334,5 +314,3 @@ Inverse autocorrelation wavelet transform(signal reconstruction). Wrapper for th
 function iacwt(acwt::AbstractArray{<:Number})
     return iwt_ac(acwt)
 end
-
-end # module
