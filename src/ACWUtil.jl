@@ -1,5 +1,5 @@
 """
-    make_noisy(x, rng, a)
+    make_noisy(x::AbstractArray{<:Number}, rng, a::Float64)
 
 Adds gaussian white noise to an image.
 
@@ -29,7 +29,7 @@ function snr(f::AbstractArray{T}, g::AbstractArray{T}) where T<:Number
 end
 
 """
-    get_snr(y, x; type, step)
+    get_snr(y::AbstractArray{T}, x::AbstractArray{T}; type::AbstractString="hard", step::Float64=0.5) where T<:Number
 
 Thresholds the wavelet coefficients matrix of a noisy signal, reconstructs it, then
 computes the signal to noise ratio between the reconstructed signal and the
@@ -67,15 +67,89 @@ function get_snr(y::AbstractArray{T}, x::AbstractArray{T}; type::AbstractString=
     num_coef = length(x)
     snr_list = zeros(0)
     coef_ratio_list = zeros(0)
-    for i in range(0, stop=round(max_coef), step=step)
-        thresh = acthreshold(x, type, i)
-        reconst = iac2d(thresh)
-        num_nonzero_coef = sum(abs.(thresh) .> 0)
-        append!(snr_list, snr(y, reconst))
-        append!(coef_ratio_list, num_nonzero_coef/num_coef)
-        println(i/round(max_coef) * 100)
+    @inbounds begin
+        for i in range(0, stop=round(max_coef), step=step)
+            thresh = acthreshold(x, type, i)
+            reconst = iac2d(thresh)
+            num_nonzero_coef = sum(abs.(thresh) .> 0)
+            append!(snr_list, snr(y, reconst))
+            append!(coef_ratio_list, num_nonzero_coef/num_coef)
+            println(i/round(max_coef) * 100)
+        end
     end
     return coef_ratio_list, snr_list
+end
+
+"""
+    get_ssim(y::AbstractArray{T}, x::AbstractArray{T}; type::AbstractString="hard", step::Float64=0.5) where T<:Number
+
+Thresholds the wavelet coefficients matrix of a noisy signal, reconstructs it, then
+computes the structural similarity index between the reconstructed signal and the
+original non-noisy signal. Returns a list of the ratio of non-zero coefficient at
+each threshold and a list containing the SSIM values.
+
+# Arguments
+- `y`: original 2D signal
+- `x`: wavelet coefficient matrix of a noisy 2D signal
+- `type`: type of thresholding (soft or hard)
+- `step`: step at which to increase the threshold
+
+# Example
+```julia
+using AutocorrelationShell, Wavelets, FileIO, Images, ImageQualityIndexes, Random
+
+img = load("./test/pictures/lenna.jpg")
+img = Float64.(Gray.(img))
+
+# Add noise to image
+rng = MersenneTwister(123)
+noisy = make_noisy(img, rng, 0.7)
+
+# Apply Wavelet transform
+H = wavelet(WT.db2)
+L = 2
+Q = qfilter(H)
+P = pfilter(H)
+
+ac_noisy = acwt2d(noisy; L=2, P=P, Q=Q)
+
+coef_ratios, ssim_values = get_ssim(img, ac_noisy; type="hard", step=0.5)
+```
+"""
+function get_ssim(y::AbstractArray{T}, x::AbstractArray{T}; type::AbstractString="hard", step::Float64=0.5) where T<:Number
+    max_coef = maximum(abs.(x)) # find largest coefficient
+    num_coef = length(x)
+    ssim_list = zeros(0)
+    coef_ratio_list = zeros(0)
+    @inbounds begin
+        for i in range(0, stop=round(max_coef), step=step)
+            thresh = acthreshold(x, type, i)
+            reconst = iac2d(thresh)
+            num_nonzero_coef = sum(abs.(thresh) .> 0)
+            append!(ssim_list, assess(SSIM(), y, reconst))
+            append!(coef_ratio_list, num_nonzero_coef/num_coef)
+            println(i/round(max_coef) * 100)
+        end
+    end
+    return coef_ratio_list, ssim_list
+end
+
+"""
+    acwt_heatmap(x::AbstractArray{<:Number})
+
+Takes the natural log of the absolute value of each cell, and plots a heatmap.
+Can be used for visualizing an input image or the coefficient matrix of a 2D ACW decomposition.
+
+# Arguments
+- `x::AbstractArray{<:Number}`: A image or a 2D matrix
+"""
+function acwt_heatmap(x::AbstractArray{<:Number})
+    heatmap(log.(abs.(x)),
+            yflip=true,
+            axis=nothing,
+            colorbar_entry=false,
+            aspect_ratio=:equal,
+            showaxis=false)
 end
 
 ## Entropy functions

@@ -73,7 +73,7 @@ that stores the coefficients of the decomposed signal.
 - `P`: Low AC shell filter
 - `Q`: High AC shell filter
 """
-function ac2d(x::AbstractArray{T,2}, L_row::Integer, L_col::Integer, P::Vector{T}, Q::Vector{T}) where T<:Number
+function ac2d(x::AbstractArray{T}, L_row::Integer, L_col::Integer, P::Vector{T}, Q::Vector{T}) where T<:Number
     num_row, num_col = size(x)
     J_row = trunc(Integer, log2(num_col))
     J_col = trunc(Integer, log2(num_row))

@@ -32,6 +32,8 @@ export
     # signal to noise ratio
     snr,
     get_snr,
+    
+    acwt_heatmap,
     # entropy
     wentropy,
     NormEntropy,
