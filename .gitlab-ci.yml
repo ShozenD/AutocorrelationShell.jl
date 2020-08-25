@@ -13,8 +13,8 @@
 .test_template: &test_definition
   # Uncomment below if you would like to run the tests on specific references
   # only, such as the branches `master`, `development`, etc.
-  # only:
-  #   - master
+  only:
+     - master
   #   - development
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
@@ -29,6 +29,7 @@
 # Name a test and select an appropriate image.
 # images comes from Docker hub
 test:0.7:
+  allow_failure: true
   image: julia:0.7
   <<: *test_definition
 
@@ -37,7 +38,7 @@ test:1.0:
   <<: *test_definition
 
 test:1.4:
-  image: julia:1.4
+  image: julia:1.5
   <<: *test_definition
 
 # Maybe you would like to test your package against the development branch:
@@ -57,7 +58,7 @@ test:1.4:
 
 # Example documentation deployment
 pages:
-  image: julia:1.4
+  image: julia:1.5
   stage: deploy
   script:
     - apt-get update -qq && apt-get install -y git  # needed by Documenter
