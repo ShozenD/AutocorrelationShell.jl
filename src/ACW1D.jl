@@ -38,12 +38,12 @@ function translate(x, to)
     return circshift(x, -to)
 end
 
-function dyadlength(x::Vector{<:Number})
 """
-	dyadlength(x)
+	dyadlength(x::Vector{<:Number})
 
-	Returns the dyadic length of a sequence `x`
+Returns the dyadic length of a sequence `x`
 """
+function dyadlength(x::Vector{<:Number})
     return trunc(Integer, log2(length(x)))
 end
 
@@ -54,15 +54,6 @@ function subsample(x)
 	Samples every other element of input signal `x`
 """
     return x[1:2:end-1]
-end
-
-function cdthresh(x, th)
-"""
-	cdthresh(x, th)
-
-	Thresholds the elements of `x` by threshold `th`
-"""
-    return diag(abs(x) >= th) * x
 end
 
 function cirperm(a)
@@ -80,45 +71,43 @@ function cirperm(a)
 end
 
 function node(d, b)
-"""
-
-"""
   return 2^d + b
 end
 
-function echant(n, d, b)
 """
-	echant(n, d, b)
+	echant(n::Integer, d::Integer, b::Integer)
 
-	Sample the range `(b+1):n` in intervals of `2^d`
+Sample the range `(b+1):n` in intervals of `2^d`
 """
+function echant(n::Integer, d::Integer, b::Integer)
     return (b + 1):(2^d):n
 end
 
-function autocorr(H::AbstractArray)
 """
-	autocorr(H)
+	autocorr(H::AbstractArray{<:Number})
 
-	Computes the autocorrelation coefficients of a given filter
+Computes the autocorrelation coefficients of a given filter
 """
+function autocorr(H::AbstractArray{<:Number})
     l = length(H)
     result = zeros(l - 1)
-    for k in 1:(l - 1)
-        for i in 1:(l - k)
-            result[k] += H[i] * H[i + k]
+    @inbounds begin
+        for k in 1:(l - 1)
+            for i in 1:(l - k)
+                result[k] += H[i] * H[i + k]
+            end
+            result[k] *= 2
         end
-        result[k] *= 2
     end
-
     return result
 end
 
-function autocorr(f::OrthoFilter)
 """
-	autocorr(f)
+	autocorr(f::OrthoFilter)
 
-	Computes the autocorrelation coefficients of a given filter
+Computes the autocorrelation coefficients of a given filter
 """
+function autocorr(f::OrthoFilter)
     return autocorr(WT.qmf(f))
 end
 
@@ -197,7 +186,7 @@ function iwt_ac(acwt::AbstractArray{<:Number})
 """
 	iwt_ac(acwt)
 
-Performs the 1D autocorrelation decomposition (inverse)
+The inverse function of `fwt_ac`. Reconstructs the original signal given an array of autocorrelation wavelet coefficients.
 """
     y = deepcopy(acwt[:, 1])
     n, m = size(acwt)
@@ -225,6 +214,7 @@ function fwt_ac(x::Vector{T}, L::Integer, P::Vector{T}, Q::Vector{T}) where T<:N
 	n = length(x)
 	J = dyadlength(x)
 
+    # Sanity Check
     @assert L > 0
     @assert L <= J
 

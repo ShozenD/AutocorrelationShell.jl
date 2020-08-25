@@ -1,4 +1,4 @@
-## One dimensional function
+# One dimensional function
 """
   ac1d_col(x, L, P, Q)
 

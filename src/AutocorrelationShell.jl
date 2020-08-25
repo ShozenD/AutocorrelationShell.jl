@@ -32,12 +32,16 @@ export
     # signal to noise ratio
     snr,
     get_snr,
-    
+
     acwt_heatmap,
     # entropy
     wentropy,
     NormEntropy,
     ThresholdEntropy,
+
+    # wiggle
+    wiggle,
+    wiggle!, 
 
     # AC Wavelet Packets
     BinaryNode,
@@ -57,7 +61,6 @@ using
 # the main show
 include("ACW1D.jl")
 include("ACW2D.jl")
-include("ACWThreshold.jl")
 include("ACWUtil.jl")
 include("ACWPT1D.jl")
 
