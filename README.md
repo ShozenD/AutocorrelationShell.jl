@@ -33,6 +33,8 @@ iacwt(decomp)
 ### Example
 Perform forward autocorrelation wavelet transform on the vector x
 ```{julia}
+using Wavelets
+
 Q = qfilter(wavelet(WT.db2))
 P = pfilter(wavelet(WT.db2))
 
