@@ -8,9 +8,6 @@ H = wavelet(WT.db2);
 Q = qfilter(H);
 P = pfilter(H);
 
-decomp = acwt(X₁, L=1, Q=Q, P=P)
-iacwt(decomp)
-
 decomp = acwpt(X₁, P, Q)
 
 # Print the tree in the console
@@ -43,8 +40,10 @@ function acwptBestBasisTree(node::BinaryNode; direction::AbstractString="right",
     end
 end
 
-acwptBestBasisTree(decomp, et=ShannonEntropy())
+acwptBestBasisTree(decomp, et=NormEntropy())
 print_tree(decomp)
+
+wentropy(decomp.left.data, NormEntropy())
 
 ## Reconstruction Algorithm
 function aciwpt(tree)

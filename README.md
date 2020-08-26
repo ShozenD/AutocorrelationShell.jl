@@ -4,6 +4,8 @@ This package is a [julia](https://github.com/JuliaLang/julia) implementation of 
 
 Signal representations using autocorrelation wavelets are redundant and non-orthogonal. Some desirable properties of autocorrelation wavelet transforms are symmetry without losing vanishing moments, edge detection and characterization capabilities, and shift invariance. Autocorrelation wavelets can be used as a tool for data analysis such as time series analysis and image analysis.
 
+For more details refer to the [documentation](https://boundaryvalueproblems.gitlab.io/autocorrelation-shell/)
+
 ## Dependencies
 The required packages are
 + `AbstractTrees`
