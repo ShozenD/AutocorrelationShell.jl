@@ -41,7 +41,7 @@ export
 
     # wiggle
     wiggle,
-    wiggle!, 
+    wiggle!,
 
     # AC Wavelet Packets
     BinaryNode,
@@ -52,6 +52,7 @@ export
 using
     AbstractTrees,
     DSP,
+    Plots,
     StatsBase,
     Statistics,
     Wavelets,

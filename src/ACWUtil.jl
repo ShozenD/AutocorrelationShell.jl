@@ -228,7 +228,7 @@ struct ThresholdEntropy <: Wavelets.Entropy end # Should we implement?
 # then coefentropy(x, et, norm) <= coefentropy(y, et, norm) should be satisfied.
 
 # (non-normalized) Shannon Entropy
-function wentropy(x::T, et::Wavelets.ShannonEntropy, nrm::T)  where T<:AbstractFloat
+function wentropy(x::T, et::Wavelets.ShannonEntropy, nrm::T)  where T<:Number
     s = (x/nrm)^2
     if s == 0.0
         return -zero(T)
@@ -238,7 +238,7 @@ function wentropy(x::T, et::Wavelets.ShannonEntropy, nrm::T)  where T<:AbstractF
 end
 
 # log energy entropy
-function wentropy(x::T, et::Wavelets.LogEnergyEntropy, nrm::T) where T<:AbstractFloat
+function wentropy(x::T, et::Wavelets.LogEnergyEntropy, nrm::T) where T<:Number
     s = (x/nrm)^2
     if s == 0.0
         return -zero(T)
@@ -247,17 +247,48 @@ function wentropy(x::T, et::Wavelets.LogEnergyEntropy, nrm::T) where T<:Abstract
     end
 end
 
-function wentropy(x::T, et::NormEntropy, nrm::T; p::T=1) where T<:AbstractFloat
-    s = (x/nrm)^2
+function wentropy(x::T, et::NormEntropy, nrm::T; p::T=1) where T<:Number
+    s = abs((x/nrm))
     return s^p
 end
 
-function wentropy(x::AbstractArray{T}, et::Wavelets.Entropy, nrm::T=norm(x)) where T<:AbstractFloat
+"""
+    wentropy(x::AbstractArray{T}, et::Wavelets.Entropy, nrm::T=norm(x)) where T<:Number
+
+Calculates the entropy of a given vector after normalizing it with the l2 norm.
+
+# Arguments
+- `x::AbstractArray{T}`: vector
+- `et::Wavelets.Entropy`: Type of entropy. Available methods are ShannonEntropy(), LogEnergyEntropy(), NormEntropy()
+- `nrm::T=norm(x)`: The norm of the given vector. *default*: L2 norm
+
+# Examples
+```{julia}
+using AutocorrelationShell, Wavelets
+
+wentropy(x, ShannonEntropy()) # Shannon Entropy
+
+wentropy(x, LogEnergyEntropy()) # Log-energy Entropy
+
+wentropy(x, NormEntropy()) # Norm Entropy
+```
+"""
+function wentropy(x::AbstractArray{T}, et::Wavelets.Entropy, nrm::T=norm(x)) where T<:Number
     @assert nrm >= 0
     sum = zero(T)
     nrm == sum && return sum
     for i in eachindex(x)
         @inbounds sum += wentropy(x[i], et, nrm)
+    end
+    return sum
+end
+
+function wentropy(x::AbstractArray{T}, et::NormEntropy, nrm::T=norm(x); p=1.0) where T<:Number
+    @assert nrm >= 0
+    sum = zero(T)
+    nrm == sum && return sum
+    for i in eachindex(x)
+        @inbounds sum += wentropy(x[i], et, nrm, p=p)
     end
     return sum
 end
