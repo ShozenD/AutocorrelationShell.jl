@@ -6,14 +6,22 @@ Signal representations using autocorrelation wavelets are redundant and non-orth
 
 For more details refer to the [documentation](https://boundaryvalueproblems.gitlab.io/autocorrelation-shell/)
 
+To see the examples of analysis done using AutocorrelationShell.jl and the presentations Statistics Research Training Program student conference at UC Davis visit the [analysis repository](https://github.com/ShozenD/RTG-Wavelet-Analysis-2020)
+
+## Authors
+This package was made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision of Professor Naoki Saito at University of California, Davis.
+
 ## Dependencies
 The required packages are
 + `AbstractTrees`
++ `Documenter`
 + `DSP`
 + `LinearAlgebra`
 + `Plots`
++ `Random`
 + `Statistics`
 + `StatsBase`
++ `StatsPlots`
 + `Wavelets`
 
 ## Usage
@@ -50,7 +58,7 @@ wiggle(decomp, Overlap = false)
 
 Result:
 
-![Result](Presentations/2019/Overleaf/auto_decomposition.png)
+![Result](figures/auto_decomposition.png)
 
 ## 2D Autocorrelation Wavelet Transform
 ```{julia}
@@ -59,7 +67,7 @@ acwt2D(img; L_row, L_col, P, Q)
 ```
 The `acwt2D` function performs a forward wavelet transformation on 2D signals such as images. It returns a 4 dimensional tensor(multidimensional array) with the dimensions (num_row, num_col, levels_of_decomp_row, levels_of_decomp_col).
 
-<img src="Presentations/Other/ac2d_decomp_heatmap.png" alt="AC2D transform example" width="600" />
+<img src="figures/ac2d_decomp_heatmap.png" alt="AC2D transform example" width="600" />
 
 ```{julia}
 # Inverse 2D Autocorrelation Wavelet Transform
@@ -91,7 +99,7 @@ acwpt(x, P, Q)
 ```
 The `acwpt` function computes the autocorrelation wavelet packet transform for 1 dimensional signal. It returns a binary tree object where the root node contains the original signal, and each child node contains a vector of 1 dimensional autocorrelation wavelet transform coefficients.
 
-<img src="Presentations/Other/acwpt_diagram.png" alt="AC Wavelet Packet Transform Diagram" width="600" />
+<img src="figures/acwpt_diagram.png" alt="AC Wavelet Packet Transform Diagram" width="600" />
 
 ### Example
 ```{julia}
@@ -110,6 +118,3 @@ print_tree(decomp)
 # Gather all nodes into a vector
 collect(PostOrderDFS(decomp))
 ```
-
-## Authors
-This package was made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision of Professor Naoki Saito at University of California, Davis.
