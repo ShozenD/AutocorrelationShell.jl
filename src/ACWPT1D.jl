@@ -113,24 +113,51 @@ function aciwpt(tree::BinaryNode)
     return (left + right)/sqrt(2)
 end
 
-"""
-    acwptBestBasisTree(node; direction, et)
+## Post Order Best Basis
+function acwptPostOrderBestBasis!(node::BinaryNode; direction::AbstractString="right", et::Wavelets.Entropy=NormEntropy())
+    if isdefined(node, :left) & isdefined(node, :right)
+        el = acwptPostOrderBestBasis!(node.left, direction="left")
+        er = acwptPostOrderBestBasis!(node.right)
+        if (el + er)/2 < wentropy(node.data, et)
+            return (el + er)/2
+        else isdefined(node, :parent) # handling cases where the first decomposition is unuseful
+            data = node.data
+            new_pruned_node = typeof(node)(data, node) # create node with no children
+            if direction == "right"
+                node.parent.right = new_pruned_node
+            else
+                node.parent.left = new_pruned_node
+            end
+            return wentropy(node.data, et)
+        end
+    else
+        return wentropy(node.data, et) # return entropy value
+    end
+end
 
-Finds the best set of basis using a given entropy criterion.
+"""
+    acwptPostOrderBestBasis(tree::BinaryNode; et::Wavelets.Entropy=NormEntropy())
+
+Returns the best basis tree found using post order traversal. This is a democratic approach to finding the best basis tree.
 
 # Arguments
-- `node::BinaryNode`: Root node of the wavelet packet tree (binary)
-- `direction::AbstractString`: Direction(left or right) of the node relative to its parent. *default*: "right"
-- `et::Wavelets.Entropy`: Entropy criterion used to determine the best tree.
+-`tree::BinaryNode`: The entry point of the wavelet packet decomposition tree.
+-`et::Wavelets.Entropy`: The type of cost function used for evaluation.
 """
-function acwptBestBasisTree(node::BinaryNode; direction::AbstractString="right", et::Wavelets.Entropy=NormEntropy())
+function acwptPostOrderBestBasis(tree::BinaryNode; et::Wavelets.Entropy=NormEntropy())
+    best_tree = deepcopy(tree)
+    acwptPostOrderBestBasis!(best_tree, et=et)
+    return best_tree
+end
+
+function acwptPreOrderBestBasis!(node::BinaryNode; direction::AbstractString="right", et::Wavelets.Entropy=NormEntropy())
     if isdefined(node, :left) & isdefined(node, :right)
         e0 = wentropy(node.data, et)
         e10 = wentropy(node.left.data, et)
         e11 = wentropy(node.right.data, et)
         if (e10 + e11)/2 < e0
-            acwptBestBasisTree(node.left, direction="left")
-            acwptBestBasisTree(node.right)
+            acwptPreOrderBestBasis!(node.left, direction="left", et=et)
+            acwptPreOrderBestBasis!(node.right, et=et)
         else
             data = node.data
             new_pruned_node = typeof(node)(data, node) # create node with no children
@@ -144,4 +171,20 @@ function acwptBestBasisTree(node::BinaryNode; direction::AbstractString="right",
             end
         end
     end
+end
+
+
+"""
+    acwptPreOrderBestBasis(node::BinaryNode; et::Wavelets.Entrop=NormEntropy())
+
+Returns the best basis tree found using pre order traversal. This is a greedy approach to finding the best basis tree.
+
+# Arguments
+-`tree::BinaryNode`: The entry point of the wavelet packet decomposition tree.
+-`et::Wavelets.Entropy`: The type of cost function used for evaluation.
+"""
+function acwptPreOrderBestBasis(tree::BinaryNode; et::Wavelets.Entropy=NormEntropy())
+    best_tree = deepcopy(tree)
+    acwptPreOrderBestBasis!(best_tree)
+    return best_tree
 end
