@@ -41,7 +41,7 @@ function snr(f::AbstractArray{T}, g::AbstractArray{T}) where T<:Number
 end
 
 """
-    get_snr(y::AbstractArray{T}, x::AbstractArray{T}; type::AbstractString="hard", step::Float64=0.5) where T<:Number
+    get_snr(y::AbstractArray{T, Integer}, x::AbstractArray{T, Integer}; type::AbstractString="hard", step::Float64=0.5) where T<:Number
 
 Thresholds the wavelet coefficients matrix of a noisy signal, reconstructs it, then
 computes the signal to noise ratio between the reconstructed signal and the
@@ -74,7 +74,7 @@ ac_noisy = ac2d(noisy, L, P, Q)
 coef_ratio, snr_list = get_snr(img, ac_noisy, type="soft", step=0.5)
 ```
 """
-function get_snr(y::AbstractArray{T, N::Integer}, x::AbstractArray{T, M::Integer}; type::AbstractString="hard", step::Float64=0.5) where T<:Number
+function get_snr(y::AbstractArray{T, Integer}, x::AbstractArray{T, Integer}; type::AbstractString="hard", step::Float64=0.5) where T<:Number
     max_coef = maximum(abs.(x)) # find largest coefficient
     num_coef = length(x)
     snr_list = zeros(0)
