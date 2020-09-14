@@ -4,9 +4,9 @@ This package is a [julia](https://github.com/JuliaLang/julia) implementation of 
 
 Signal representations using autocorrelation wavelets are redundant and non-orthogonal. Some desirable properties of autocorrelation wavelet transforms are symmetry without losing vanishing moments, edge detection and characterization capabilities, and shift invariance. Autocorrelation wavelets can be used as a tool for data analysis such as time series analysis and image analysis.
 
-For more details refer to the [documentation](https://boundaryvalueproblems.gitlab.io/autocorrelation-shell/)
+For more details refer to the [documentation](https://boundaryvalueproblems.gitlab.io/autocorrelation-shell/).
 
-To see the examples of analysis done using AutocorrelationShell.jl and the presentations Statistics Research Training Program student conference at UC Davis visit the [analysis repository](https://github.com/ShozenD/RTG-Wavelet-Analysis-2020)
+To see the examples of analysis done using AutocorrelationShell.jl and the presentations Statistics Research Training Program student conference at UC Davis visit the [analysis repository](https://github.com/ShozenD/RTG-Wavelet-Analysis-2020).
 
 ## Authors
 This package was made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision of Professor Naoki Saito at University of California, Davis.
@@ -73,7 +73,7 @@ The `acwt2D` function performs a forward wavelet transformation on 2D signals su
 # Inverse 2D Autocorrelation Wavelet Transform
 iacwt2D(decomp)
 ```
-The `iacwt2D` function is the inverse function of `acwt2D`. It takes an array of autocorellation wavelet coefficients and reconstructs the original signal.
+The `iacwt2D` function is the inverse function of `acwt2D`. It takes an array of autocorrelation wavelet coefficients and reconstructs the original signal.
 
 ### Example
 ```{julia}
@@ -97,7 +97,7 @@ reconst = iacwt2D(decomp)
 # Autocorrelation Wavelet Packet Transform
 acwpt(x, P, Q)
 ```
-The `acwpt` function computes the autocorrelation wavelet packet transform for 1 dimensional signal. It returns a binary tree object where the root node contains the original signal, and each child node contains a vector of 1 dimensional autocorrelation wavelet transform coefficients.
+The `acwpt` function computes the autocorrelation wavelet packet transform for 1 dimensional signal. It returns a binary tree where the root node contains the original signal, and each child node contains a vector of 1 dimensional autocorrelation wavelet transform coefficients.
 
 <img src="figures/acwpt_diagram.png" alt="AC Wavelet Packet Transform Diagram" width="600" />
 
