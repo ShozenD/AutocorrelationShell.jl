@@ -14,6 +14,7 @@ export
     # others
     autocorr,
     ac_filter,
+    echant,
     autocorr_calc,
     dyadlength,
 
