@@ -48,8 +48,8 @@ export
     BinaryNode,
     acwpt,
     aciwpt,
-    postOrderBestBasis,
-    preOrderBestBasis
+    acwptPostOrderBestBasis,
+    acwptPreOrderBestBasis
 
 using
     AbstractTrees,
