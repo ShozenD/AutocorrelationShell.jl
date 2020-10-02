@@ -77,8 +77,8 @@ function ac2d(x::AbstractArray{T}, L_row::Integer, L_col::Integer, P::Vector{T},
     num_row, num_col = size(x)
     J_row = trunc(Integer, log2(num_col))
     J_col = trunc(Integer, log2(num_row))
-    D_row = J_row - L_row
-    D_col = J_col - L_col
+    D_row = J_row - L_row + 1
+    D_col = J_col - L_col + 1
     accoef_matrix_3d = ac1d_col(x, L_col, P, Q)
     accoef_matrix_4d = Array{Float64, 4}(undef, D_col, num_col, D_row, num_row)
     @inbounds begin
