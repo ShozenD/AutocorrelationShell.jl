@@ -90,7 +90,7 @@ function acwpt(x::Vector{T}, P::Vector{T}, Q::Vector{T}) where T<:Real
     L = max_depth - 2
 
     root = BinaryNode(x) # original signal
-    acwpt(x, root, L, P, Q, 2)
+    acwpt(x, root, P, Q, 2)
 
     return root
 end
