@@ -1,7 +1,10 @@
 # AutocorrelationShell.jl
 
 [![Build Status](https://travis-ci.com/ShozenD/AutocorrelationShell.svg?branch=master)](https://travis-ci.com/ShozenD/AutocorrelationShell)
+[![Build status](https://ci.appveyor.com/api/projects/status/st8rusn3rv0j463m?svg=true)](https://ci.appveyor.com/project/ShozenD/autocorrelationshell)
 [![codecov](https://codecov.io/gh/ShozenD/AutocorrelationShell/branch/master/graph/badge.svg)](https://codecov.io/gh/ShozenD/AutocorrelationShell)
+[![Coverage Status](https://coveralls.io/repos/github/ShozenD/AutocorrelationShell/badge.svg?branch=master)](https://coveralls.io/github/ShozenD/AutocorrelationShell?branch=master)
+
 
 This package is a [julia](https://github.com/JuliaLang/julia) implementation of autocorrelation wavelets. The package includes the 1D autocorrelation wavelet transform, 2D autocorrelation wavelet transform, and autocorrelation wavelet packet transform.
 
