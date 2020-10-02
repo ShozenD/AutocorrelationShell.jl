@@ -1,4 +1,4 @@
-using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees, FileIO, Images, QuartzImageIO
+using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees
 
 @testset "AutocorrelationShell.jl" begin
     # Autocorrelation Wavelet Transform 1D
@@ -17,11 +17,10 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees, FileIO
         Q = qfilter(wavelet(WT.db2));
         P = pfilter(wavelet(WT.db2));
 
-        img = load("./test/pictures/lenna.jpg")
-        img = Float64.(Gray.(img))
+        X = randn(512, 512);
 
-        decomp = acwt2D(img; L_row=4, L_col=4, P=P, Q=Q)
-        norm(img - iacwt2D(decomp)) < 1e-12
+        decomp = acwt2D(X; L_row=4, L_col=4, P=P, Q=Q)
+        norm(X - iacwt2D(decomp)) < 1e-12
     end
 
     # Autocorrelation Wavelet Packet Transform
