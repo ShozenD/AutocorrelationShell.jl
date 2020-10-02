@@ -47,7 +47,7 @@ export
     # AC Wavelet Packets
     BinaryNode,
     acwpt,
-    aciwpt,
+    iacwpt,
     acwptPostOrderBestBasis,
     acwptPreOrderBestBasis
 
