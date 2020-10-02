@@ -29,6 +29,20 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees
     @test begin
         X = acwt(x, L=2, P=P, Q=Q)[:,4];
         tree = acwpt(X, P, Q);
-        norm(X - iacwpt(tree)) < 1e-15
+        norm(X - iacwpt(tree)) < 1e-14
+    end
+
+    @test begin
+        X = acwt(x, L=2, P=P, Q=Q)[:,4];
+        tree = acwpt(X, P, Q);
+        best_tree = acwptPostOrderBestBasis(tree)
+        norm(X - iacwpt(best_tree)) < 1e-15
+    end
+
+    @test begin
+        X = acwt(x, L=2, P=P, Q=Q)[:,4];
+        tree = acwpt(X, P, Q);
+        best_tree = acwptPreOrderBestBasis(tree)
+        norm(X - iacwpt(best_tree)) < 1e-15
     end
 end
