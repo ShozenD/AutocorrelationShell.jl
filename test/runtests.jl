@@ -1,6 +1,6 @@
-using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees
+using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees, FileIO, Images, QuartzImageIO
 
-## Autocorrelation Wavelet Transform 
+## Autocorrelation Wavelet Transform 1D
 @test begin
     Q = qfilter(wavelet(WT.db2));
     P = pfilter(wavelet(WT.db2));
@@ -9,6 +9,16 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees
     decomp = acwt(x, L=2, P=P, Q=Q)
 
     norm(x - iacwt(decomp)) < 1e-15
+end
+
+@test begin
+    Q = qfilter(wavelet(WT.db2));
+    P = pfilter(wavelet(WT.db2));
+
+    img = load("./test/pictures/lenna.jpg")
+    img = Float64.(Gray.(img))
+
+    norm(acwt2D(img; L_row=4, L_col=4, P=P, Q=Q) - iacwt2D(img)) < 1e-15
 end
 
 ## Autocorrelation Wavelet Packet Transform

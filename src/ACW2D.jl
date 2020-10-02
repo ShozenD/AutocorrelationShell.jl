@@ -17,7 +17,7 @@ function ac1d_col(x::AbstractArray{T}, L::Integer, P::Vector{T}, Q::Vector{T}) w
     @assert L >= 0
     @assert L <= J
 
-    D = J - L + 1
+    D = J - L
     accoef_matrix_3d = Array{Float64, 3}(undef, num_row, D, num_col)
     @inbounds begin
         for i in 1:num_col
@@ -46,7 +46,7 @@ function ac1d_row(x::AbstractArray{T}, L::Integer, P::Vector{T}, Q::Vector{T}) w
     @assert L >= 0
     @assert L <= J
 
-    D = J - L + 1
+    D = J - L
     accoef_matrix_3d = Array{Float64, 3}(undef, num_col, D, num_row)
     @inbounds begin
         for i in 1:num_row
@@ -77,8 +77,8 @@ function ac2d(x::AbstractArray{T}, L_row::Integer, L_col::Integer, P::Vector{T},
     num_row, num_col = size(x)
     J_row = trunc(Integer, log2(num_col))
     J_col = trunc(Integer, log2(num_row))
-    D_row = J_row - L_row + 1
-    D_col = J_col - L_col + 1
+    D_row = J_row - L_row
+    D_col = J_col - L_col
     accoef_matrix_3d = ac1d_col(x, L_col, P, Q)
     accoef_matrix_4d = Array{Float64, 4}(undef, D_col, num_col, D_row, num_row)
     @inbounds begin

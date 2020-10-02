@@ -9,9 +9,7 @@ decomp = acwt(x, L=2, P=P, Q=Q)
 
 X = decomp[:,4];
 
-wentropy(X, NormEntropy())
-
-tree = acwpt_new(X, P, Q);
+tree = acwpt(X, P, Q);
 
 decomp = fwt_ac_new(X, 0, P, Q);
 
