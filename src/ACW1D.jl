@@ -236,10 +236,6 @@ function fwt_ac(x::Vector{T}, L::Integer, P::Vector{T}, Q::Vector{T}) where T<:N
 	return wp
 end
 
-for i 0:-1
-    println(i)
-end
-
 function autocorr_calc(R, w::OrthoFilter, L)
 """
 	autocorr_calc(R, w::OrthoFilter, L)
