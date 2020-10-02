@@ -215,7 +215,7 @@ function fwt_ac(x::Vector{T}, L::Integer, P::Vector{T}, Q::Vector{T}) where T<:N
 	J = dyadlength(x)
 
     # Sanity Check
-    @assert L > 0
+    @assert L >= 0
     @assert L <= J
 
 	D = J-L
@@ -234,6 +234,10 @@ function fwt_ac(x::Vector{T}, L::Integer, P::Vector{T}, Q::Vector{T}) where T<:N
     	end
     end
 	return wp
+end
+
+for i 0:-1
+    println(i)
 end
 
 function autocorr_calc(R, w::OrthoFilter, L)

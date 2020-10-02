@@ -48,23 +48,29 @@ Base.eltype(::Type{<:TreeIterator{BinaryNode{T}}}) where T = BinaryNode{T}
 Base.IteratorEltype(::Type{<:TreeIterator{BinaryNode{T}}}) where T = Base.HasEltype()
 
 ## Wavelet Packets functions
-function binary_ac1d(x::Vector{T}, node::BinaryNode,
-    L::Integer, P::Vector{T}, Q::Vector{T}, depth::Integer) where T<:Real
+function acwpt(x::Vector{T}, node::BinaryNode,
+    P::Vector{T}, Q::Vector{T}, d::Integer) where T<:Real
 
-    max_depth = L+2 # maximum tree depth
+    n = length(x)
+    J = dyadlength(x) # maximum tree depth
+    left, right = zeros(n), zeros(n)
 
-    if depth <= max_depth
-        decomp = fwt_ac(x, L, P, Q)
+    if d <= J
+        for b = 0:(2^d-1) # depth starts from 2
+            s = x[echant(n, d, b)]
+            h = ac_filter(s, Q)
+            l = ac_filter(s, P)
+            left[echant(n, d, b)] = l
+            right[echant(n, d, b)] = h
+        end
 
         # left
-        left = decomp[:,1]
         leftchild(left, node)
-        binary_ac1d(left, node.left, L, P, Q, depth+1)
+        acwpt(left, node.left, P, Q, d+1)
 
         # right
-        right = decomp[:,2]
         rightchild(right, node)
-        binary_ac1d(right, node.right, L, P, Q, depth+1)
+        acwpt(right, node.right, P, Q, d+1)
     end
 end
 
@@ -84,7 +90,7 @@ function acwpt(x::Vector{T}, P::Vector{T}, Q::Vector{T}) where T<:Real
     L = max_depth - 2
 
     root = BinaryNode(x) # original signal
-    binary_ac1d(x, root, L, P, Q, 2)
+    acwpt(x, root, L, P, Q, 2)
 
     return root
 end

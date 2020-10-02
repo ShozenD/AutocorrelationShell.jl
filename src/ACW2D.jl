@@ -14,7 +14,7 @@ function ac1d_col(x::AbstractArray{T}, L::Integer, P::Vector{T}, Q::Vector{T}) w
     num_row, num_col = size(x)
     J = trunc(Integer, log2(num_row))
 
-    @assert L > 0
+    @assert L >= 0
     @assert L <= J
 
     D = J - L + 1
@@ -43,7 +43,7 @@ function ac1d_row(x::AbstractArray{T}, L::Integer, P::Vector{T}, Q::Vector{T}) w
     num_row, num_col = size(x)
     J = trunc(Integer, log2(num_col))
 
-    @assert L > 0
+    @assert L >= 0
     @assert L <= J
 
     D = J - L + 1
