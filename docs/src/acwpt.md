@@ -21,7 +21,7 @@ acwpt(x::Vector{T}, P::Vector{T}, Q::Vector{T}) where T<:Real
 By design, the original signal is contained in the root node of the binary decomposition tree.
 However, One can reconstruct the signal from the wavelet coefficents, perhaps after pruning the tree, using the `aciwpt` function.
 ```@docs
-aciwpt(tree::BinaryNode)
+iacwpt(tree::BinaryNode)
 ```
 
 For a wavelet packet decomposition, it is interesting to find an optimal decomposition with

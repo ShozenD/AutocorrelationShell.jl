@@ -93,7 +93,7 @@ function acwpt(x::Vector{T}, P::Vector{T}, Q::Vector{T}) where T<:Real
 end
 
 """
-    aciwpt(tree)
+    iacwpt(tree)
 
 Reconstructs the signal using the autocorrelation wavelet packet trasform bases.
 
@@ -102,11 +102,11 @@ Reconstructs the signal using the autocorrelation wavelet packet trasform bases.
 """
 function iacwpt(tree::BinaryNode)
     if isdefined(tree, :left)
-        left = aciwpt(tree.left)
+        left = iacwpt(tree.left)
     end
 
     if isdefined(tree, :right)
-        right = aciwpt(tree.right)
+        right = iacwpt(tree.right)
     end
 
     if !isdefined(tree, :left) & !isdefined(tree, :right)
