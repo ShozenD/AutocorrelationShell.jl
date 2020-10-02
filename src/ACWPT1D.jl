@@ -55,13 +55,15 @@ function acwpt(x::Vector{T}, node::BinaryNode,
     J = dyadlength(x) # maximum tree depth
     left, right = zeros(n), zeros(n)
 
-    if d <= J
-        for b = 0:(2^d-1) # depth starts from 2
-            s = x[echant(n, d, b)]
-            h = ac_filter(s, Q)
-            l = ac_filter(s, P)
-            left[echant(n, d, b)] = l
-            right[echant(n, d, b)] = h
+    if d < J
+        @inbounds begin
+            for b = 0:(2^d-1) # depth starts from 2
+                s = x[echant(n, d, b)]
+                h = ac_filter(s, Q)
+                l = ac_filter(s, P)
+                left[echant(n, d, b)] = l
+                right[echant(n, d, b)] = h
+            end
         end
 
         # left
@@ -85,13 +87,8 @@ Compute the autocorrelation wavelet packet transform for a given signal. Returns
 - `Q::Vector{<:Real}`: High autocorrelation shell filter.
 """
 function acwpt(x::Vector{T}, P::Vector{T}, Q::Vector{T}) where T<:Real
-
-    max_depth = dyadlength(x) + 1
-    L = max_depth - 2
-
     root = BinaryNode(x) # original signal
-    acwpt(x, root, P, Q, 2)
-
+    acwpt(x, root, P, Q, 0)
     return root
 end
 
@@ -103,7 +100,7 @@ Reconstructs the signal using the autocorrelation wavelet packet trasform bases.
 # Arguments
 - `tree::BinaryNode`: The root node of the wavelet packet tree (binary tree)
 """
-function aciwpt(tree::BinaryNode)
+function iacwpt(tree::BinaryNode)
     if isdefined(tree, :left)
         left = aciwpt(tree.left)
     end
@@ -126,7 +123,7 @@ function acwptPostOrderBestBasis!(node::BinaryNode; direction::AbstractString="r
         er = acwptPostOrderBestBasis!(node.right)
         if (el + er)/2 < wentropy(node.data, et)
             return (el + er)/2
-        else isdefined(node, :parent) # handling cases where the first decomposition is unuseful
+        elseif isdefined(node, :parent) # handling cases where the first decomposition is unuseful
             data = node.data
             new_pruned_node = typeof(node)(data, node) # create node with no children
             if direction == "right"
