@@ -11,7 +11,7 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees, FileIO
     norm(x - iacwt(decomp)) < 1e-15
 end
 
-@test begin
+@testset "AutocorrelationShell.jl" begin
     Q = qfilter(wavelet(WT.db2));
     P = pfilter(wavelet(WT.db2));
 
