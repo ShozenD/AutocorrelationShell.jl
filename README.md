@@ -1,5 +1,6 @@
 # AutocorrelationShell.jl
 
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://boundaryvalueproblems.gitlab.io/autocorrelation-shell/)
 [![Build Status](https://travis-ci.com/ShozenD/AutocorrelationShell.svg?branch=master)](https://travis-ci.com/ShozenD/AutocorrelationShell)
 [![Build status](https://ci.appveyor.com/api/projects/status/st8rusn3rv0j463m?svg=true)](https://ci.appveyor.com/project/ShozenD/autocorrelationshell)
 [![codecov](https://codecov.io/gh/ShozenD/AutocorrelationShell/branch/master/graph/badge.svg)](https://codecov.io/gh/ShozenD/AutocorrelationShell)
@@ -10,31 +11,15 @@ This package is a [julia](https://github.com/JuliaLang/julia) implementation of 
 
 Signal representations using autocorrelation wavelets are redundant and non-orthogonal. Some desirable properties of autocorrelation wavelet transforms are symmetry without losing vanishing moments, edge detection and characterization capabilities, and shift invariance. Autocorrelation wavelets can be used as a tool for data analysis such as time series analysis and image analysis.
 
-For more details refer to the [documentation](https://boundaryvalueproblems.gitlab.io/autocorrelation-shell/).
-
 To see the examples of analysis done using AutocorrelationShell.jl and the presentations Statistics Research Training Program student conference at UC Davis visit the [analysis repository](https://github.com/ShozenD/RTG-Wavelet-Analysis-2020).
 
 ## Authors
 This package was made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision of Professor Naoki Saito at University of California, Davis.
 
-## Dependencies
-The required packages are
-+ `AbstractTrees`
-+ `Documenter`
-+ `DSP`
-+ `LinearAlgebra`
-+ `Plots`
-+ `Random`
-+ `Statistics`
-+ `StatsBase`
-+ `StatsPlots`
-+ `Wavelets`
-
 ## Usage
 Load the autocorrelation module
 ```{julia}
-include("./src/AutocorrelationShell.jl")
-using Main.AutocorrelationShell
+using AutocorrelationShell
 ```
 
 ## 1D Autocorrelation Wavelet Transform

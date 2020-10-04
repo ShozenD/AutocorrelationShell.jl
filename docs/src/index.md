@@ -12,7 +12,7 @@ The Autocorrelation Shell is heavily inspired by the paper [Wavelets, their auto
 
 You can install the package at the Pkg REPL-mode with:
 ````julia
-(v1.3) pkg> add AutocorrelationShell
+(v1.4) >] add AutocorrelationShell
 ````
 
 ## Highlights
