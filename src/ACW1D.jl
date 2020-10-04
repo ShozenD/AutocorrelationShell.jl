@@ -29,15 +29,6 @@ function iconv(f,x)
    return y
 end
 
-function translate(x, to)
-"""
-	translate(x, to)
-
-	Circular translates the signal `x` by the desired places `to` to the left
-"""
-    return circshift(x, -to)
-end
-
 """
 	dyadlength(x::Vector{<:Number})
 
@@ -45,33 +36,6 @@ Returns the dyadic length of a sequence `x`
 """
 function dyadlength(x::Vector{<:Number})
     return trunc(Integer, log2(length(x)))
-end
-
-function subsample(x)
-"""
-	subsample(x)
-
-	Samples every other element of input signal `x`
-"""
-    return x[1:2:end-1]
-end
-
-function cirperm(a)
-"""
-	cirperm(a)
-
-	Given a sequence `a` for length `n`, return an `n`x`n` matrix containing all circular permutations of `a`
-"""
-    n = length(a)
-    res = zeros(n, n)
-    for i = 1:n
-        res[i, :] = translate(a, 1 - i)
-    end
-    return res
-end
-
-function node(d, b)
-  return 2^d + b
 end
 
 """
@@ -151,22 +115,6 @@ function qfilter(filter::OrthoFilter)
     return vcat(b[end:-1:1], c1, b)
 end
 
-function acnyquist(s)
-"""
-	acnyquist(s)
-
-	Computes the Nyquist frequency of a given signal `s`
-"""
-	n = length(s)
-	sub = s[collect(2:2:n)]
-	r = 0
-	n = length(sub)
-	for k = 1:n
-		r += sub[k]*((-1)^(k-1))
-	end
-	return r
-end
-
 function ac_filter(x, filter)
 """
 	ac_filter(x, filter)
@@ -234,62 +182,6 @@ function fwt_ac(x::Vector{T}, L::Integer, P::Vector{T}, Q::Vector{T}) where T<:N
     	end
     end
 	return wp
-end
-
-function autocorr_calc(R, w::OrthoFilter, L)
-"""
-	autocorr_calc(R, w::OrthoFilter, L)
-
-	Calculates all induced autocovariance functions at all levels
-
-	# Arguments
-	- `R`: autocovariance of the original signal
-	- `w`: wavelet to be used
-	- `L`: decomposition level
-"""
-	P = pfilter(w)
-	Q = qfilter(w)
-
-	b = autocorr(P) / 2
-	c = autocorr(Q) / 2
-
-	b = vcat(b[end:-1:1], norm(P)^2, b)
-	c = vcat(c[end:-1:1], norm(Q)^2, c)
-
-	n = length(R)
-	J = log2(n)
-
-	RS = zeros(n, L+1)
-	RD = zeros(n, L)
-	RS[:,1] = R
-
-	for j = 1:L
-	RS[1:2^(J - j), j + 1] = subsample(ac_filter(RS[1:2^(J - j + 1), j]', b))';
-	RD[1:2^(J - j), j] = subsample(ac_filter(RS[1:2^(J - j + 1), j]',c))';
-	end
-
-	return RS, RD
-end
-
-function inv_ac_table(table, basis)
-"""
-	inv_ac_table(table, basis)
-
-	Computes the inverse AC decomposition using the chosen basis
-"""
-    n, D = size(table)
-    L = floor(log2(D))
-    tab2 = deepcopy(table)
-
-    for d = (L-1):-1:0
-        for b = 0:(2^d - 1)
-            if basis[node(d, b)] == 1
-                tab2[:, node(d, b)] = iwt_ac(tab2[:, node(d + 1, 2 * b):node(d + 1, 2 * b + 1)])'
-			end
-        end
-    end
-
-    return tab2[:, 1]'
 end
 
 """

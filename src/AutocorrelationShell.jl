@@ -15,7 +15,6 @@ export
     autocorr,
     ac_filter,
     echant,
-    autocorr_calc,
     dyadlength,
 
     # 2D forward autocorrelation wavelet transform
