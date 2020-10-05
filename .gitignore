@@ -276,3 +276,7 @@ TSWLatexianTemp*
 
 # documenter
 docs/build/
+
+# ssh keys
+privatekey
+privatekey.pub
