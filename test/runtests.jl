@@ -1,4 +1,11 @@
-using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees, Random
+using
+    Test,
+    AutocorrelationShell,
+    Wavelets,
+    LinearAlgebra,
+    AbstractTrees,
+    Random,
+    Plots
 
 @testset "Autocorrelation Shell" begin
     Q = qfilter(wavelet(WT.db2));
@@ -50,6 +57,20 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees, Random
             best_tree = acwptPreOrderBestBasis(tree)
             norm(X - iacwpt(best_tree)) < 1e-15
         end
+
+        @test begin
+            X = acwt(x, L=2, P=P, Q=Q)[:,4];
+            tree = acwpt(X, P, Q);
+            best_tree = acwptPostOrderBestBasis(tree, et=ShannonEntropy())
+            norm(X - iacwpt(best_tree)) < 1e-15
+        end
+
+        @test begin
+            X = acwt(x, L=2, P=P, Q=Q)[:,4];
+            tree = acwpt(X, P, Q);
+            best_tree = acwptPostOrderBestBasis(tree, et=LogEnergyEntropy())
+            norm(X - iacwpt(best_tree)) < 1e-15
+        end
     end
 
     @testset "ACUtil" begin
@@ -57,5 +78,14 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, AbstractTrees, Random
 
         @test acthreshold([0.1, 0.2, 0.2, 0.3], "hard", 0.1) == [0, 0.2, 0.2, 0.3]
         @test acthreshold([0.05, 0.2, 0.4, 0.5], "soft", 0.1) ≈ [0, 0.1, 0.3, 0.4]
+
+        # For the sake of code coverage
+        @test begin
+            p = wiggle(acwt(x, L=1, P=P, Q=Q))
+            typeof(p) == Plots.Plot{Plots.GRBackend}
+
+            p = wiggle!(acwt(x, L=1, P=P, Q=Q))
+            typeof(p) == Plots.Plot{Plots.GRBackend}
+        end
     end
 end

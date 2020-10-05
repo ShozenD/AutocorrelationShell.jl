@@ -15,7 +15,7 @@ Signal representations using autocorrelation wavelets are redundant and non-orth
 To see the examples of analysis done using AutocorrelationShell.jl and the presentations Statistics Research Training Program student conference at UC Davis visit the [analysis repository](https://github.com/ShozenD/RTG-Wavelet-Analysis-2020).
 
 ## Authors
-This package was made by Rishi Subramanian, Christina Chang, and Shozen Dan under the supervision of Professor Naoki Saito at University of California, Davis.
+This package was first translated from Matlab code by Rishi Subramanian, and was extended by Christina Chang, and Shozen Dan all under the supervision of Professor Naoki Saito at University of California, Davis.
 
 ## Usage
 Load the autocorrelation module
