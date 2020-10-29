@@ -16,6 +16,12 @@ Wavelets = "29a6e085-ba6d-5f35-a997-948ac2efa89a"
 
 [compat]
 julia = "1"
+AbstractTrees = "0.3"
+DSP = "0.6"
+Documenter = "0.25"
+Plots = "1.6"
+StatsBase = "0.33"
+Wavelets = "0.9"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
