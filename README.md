@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://ShozenD.github.io/AutocorrelationShell.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://ShozenD.github.io/AutocorrelationShell.jl/dev)
-[![Build Status](https://travis-ci.com/ShozenD/AutocorrelationShell.svg?branch=master)](https://travis-ci.com/ShozenD/AutocorrelationShell)
+[![Build Status](https://travis-ci.com/ShozenD/AutocorrelationShell.jl.svg?branch=master)](https://travis-ci.com/ShozenD/AutocorrelationShell.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/st8rusn3rv0j463m?svg=true)](https://ci.appveyor.com/project/ShozenD/autocorrelationshell)
 [![codecov](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl)
 [![Coverage Status](https://coveralls.io/repos/github/ShozenD/AutocorrelationShell/badge.svg?branch=master)](https://coveralls.io/github/ShozenD/AutocorrelationShell?branch=master)
