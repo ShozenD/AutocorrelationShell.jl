@@ -1,4 +1,4 @@
-# AutocorrelationShell.jl
+[![AutocorrelationShell.jl](figures/autocorrelation_shell_logo.png)](https://ShozenD.github.io/AutocorrelationShell.jl/stable)
 
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://ShozenD.github.io/AutocorrelationShell.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://ShozenD.github.io/AutocorrelationShell.jl/dev)
