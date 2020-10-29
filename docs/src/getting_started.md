@@ -7,7 +7,7 @@ discuss any background information or theory here in detail.
 ## Installation
 
 To install
-[AutocorrelationShell.jl](https://gitlab.com/BoundaryValueProblems/autocorrelation-shell), start up
+[AutocorrelationShell.jl](https://github.com/ShozenD/AutocorrelationShell.jl), start up
 Julia and type the following code-snipped into the REPL. It makes
 use of the native Julia package manger.
 
@@ -29,7 +29,7 @@ Pkg.checkout("AutocorrelationShell")
 The following code snippet shows how to obtain the autocorrelation wavelet decomposition of a 1D signal.
 
 ```julia
-using AutocorrelationShell, Wavlets, Plots
+using AutocorrelationShell, Wavelets, Plots
 
 H = wavelet(WT.db2)
 L = 2
@@ -106,6 +106,6 @@ information here, or if you prefer you can make use of Julia's
 native doc-system.
 
 If you encounter a bug or would like to participate in the
-development of this package come find us on GitLab.
+development of this package come find us on GitHub.
 
-- [BoundaryValueProblems/AutocorrelationShell.jl](https://gitlab.com/BoundaryValueProblems/autocorrelation-shell)
+- [ShozenD/AutocorrelationShell.jl](https://github.com/ShozenD/AutocorrelationShell.jl)

@@ -22,7 +22,7 @@ get_ssim(y::AbstractArray{T}, x::AbstractArray{T}; type::AbstractString="hard", 
 
 acwt_heatmap(x::AbstractArray{<:Number})
 
-# wentropy(x::AbstractArray{T}, et::Wavelets.Entropy, nrm::T=norm(x)) where T<:Number
+wentropy(x::AbstractArray{T}, et::Wavelets.Entropy, nrm::T=norm(x)) where T<:Number
 
 wiggle(wav; taxis=1:size(wav,1), zaxis=1:size(wav,2), sc=1, EdgeColor=:black, FaceColor=:black, Overlap=true, Orient=:across, ZDir=:normal)
 
