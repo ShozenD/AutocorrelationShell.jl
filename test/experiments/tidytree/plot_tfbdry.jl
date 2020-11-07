@@ -1,4 +1,4 @@
-using Plots, LinearAlgebra
+using Plots, LinearAlgebra, AutocorrelationShell, Wavelets
 
 """
 plot_tfbdry(x, c)
@@ -49,3 +49,22 @@ function plot_tfbdry(x, c)
 end
 
 plot_tfbdry(bbpattern, :red)
+
+Q = qfilter(wavelet(WT.db2));
+P = pfilter(wavelet(WT.db2));
+
+# One hot signal
+x = zeros(256); x[128] = 1; # One hot signal
+decomp1 = acwt(x, L=1, P=P, Q=Q);
+tree1 = acwpt(x, P, Q);
+
+# Extract level 4 decomp
+X = decomp1[:,4];
+X = acwt(x, L=2, P=P, Q=Q)[:,4];
+
+decomp2 = acwt(X, L=0, P=P, Q=Q);
+tree2 = acwpt(X, P, Q);
+
+tree2 = acwptPostOrderBestBasis(tree2)
+
+collect(PreOrderDFS(tree2))

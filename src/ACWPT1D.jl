@@ -102,7 +102,7 @@ Compute the autocorrelation wavelet packet transform for a given signal. Returns
 - `Q::Vector{<:Real}`: High autocorrelation shell filter.
 """
 function acwpt(x::Vector{T}, P::Vector{T}, Q::Vector{T}) where T<:Real
-    root = BinaryNode(x) # original signal
+    root = initializeBinaryNode(x) # original signal
     acwpt(x, root, P, Q, 0)
     return root
 end
