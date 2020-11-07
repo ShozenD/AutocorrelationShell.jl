@@ -23,21 +23,21 @@ function initializeBinaryNode(data) # Rootnode initialize method
     return node
 end
 
-function initializeBinaryNode(data, parent::BinaryNode; depth::Int=0) # childnode initialize method
+function initializeBinaryNode(data, parent::BinaryNode, depth::Int) # childnode initialize method
     node = typeof(parent)(data, parent)
     node.depth = depth
     return node
 end
 
-function leftchild(data, parent::BinaryNode; depth::Int=0)
+function leftchild(data, parent::BinaryNode, depth::Int)
     !isdefined(parent, :left) || error("left child is already assigned")
-    node = initializeBinaryNode(data, parent; depth=depth)
+    node = initializeBinaryNode(data, parent, depth)
     parent.left = node
 end
 
-function rightchild(data, parent::BinaryNode; depth::Int=0)
+function rightchild(data, parent::BinaryNode, depth::Int)
     !isdefined(parent, :right) || error("right child is already assigned")
-    node = initializeBinaryNode(data, parent; depth=depth)
+    node = initializeBinaryNode(data, parent, depth)
     parent.right = node
 end
 
@@ -82,11 +82,11 @@ function acwpt(x::Vector{T}, node::BinaryNode,
         end
 
         # left
-        leftchild(left, node; depth=d+1)
+        leftchild(left, node, d+1)
         acwpt(left, node.left, P, Q, d+1)
 
         # right
-        rightchild(right, node; depth=d+1)
+        rightchild(right, node, d+1)
         acwpt(right, node.right, P, Q, d+1)
     end
 end

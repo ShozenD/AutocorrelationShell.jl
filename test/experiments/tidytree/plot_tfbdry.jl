@@ -1,30 +1,4 @@
-using Plots, LinearAlgebra, AutocorrelationShell, Wavelets
-
-"""
-plot_tfbdry(x, c)
-
-# Arguments
--`x::BinaryNode`: Root node of the packet decomposition
--`c::String`: Line color
-"""
-function plot_tfbdry(x::BinaryNode, c::String)
-    nrow, ncol = size(x)
-
-    # Horizontal Lines
-    for j=0:ncol-1
-        plot(-0.5:nrow-0.5, (j+0.5)*ones(nr+1), c)
-    end
-
-    for i=1:ncol-1
-        for j=1:2^(j-1)
-            vpos = (nr/2^i)*(2*j-1)-0.5
-            h = line(vpos*ones(nc-i+1), i-0.5:ncol-0.5)
-            for k=1:length(h)
-                set(h(k), 'Color', c)
-            end
-        end
-    end
-end
+using Plots, LinearAlgebra, AutocorrelationShell, Wavelets, AbstractTrees
 
 bbpattern = zeros(8,4);
 
@@ -68,3 +42,18 @@ tree2 = acwpt(X, P, Q);
 tree2 = acwptPostOrderBestBasis(tree2)
 
 collect(PreOrderDFS(tree2))
+
+
+ncol = dyadlength(tree2.data)
+nrow = length(tree2.data)
+
+bbpattern = zeros(nrow, ncol)
+
+bbpattern[:,1]
+index_hash = zeros(ncol)
+
+for node in collect(PreOrderDFS(tree2)):
+    if node.depth > 0:
+        index_hash[node.depth] += length(node.data)/2^node.depth
+    end
+end
