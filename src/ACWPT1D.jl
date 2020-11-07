@@ -2,8 +2,11 @@
 mutable struct BinaryNode{T}
     data::T
     parent::BinaryNode{T}
-    left::BinaryNode{T}
+    left::BinaryNode{T} # pointers to children
     right::BinaryNode{T}
+
+    # for graphing purposes
+    depth::Int # tree depth
 
     # Root constructor
     BinaryNode{T}(data) where T = new{T}(data)
@@ -14,15 +17,27 @@ end
 BinaryNode(data) = BinaryNode{typeof(data)}(data)
 
 ## base node methods
-function leftchild(data, parent::BinaryNode)
-    !isdefined(parent, :left) || error("left child is already assigned")
+function initializeBinaryNode(data) # Rootnode initialize method
+    node = BinaryNode(data)
+    node.depth = 0
+    return node
+end
+
+function initializeBinaryNode(data, parent::BinaryNode; depth::Int=0) # childnode initialize method
     node = typeof(parent)(data, parent)
+    node.depth = depth
+    return node
+end
+
+function leftchild(data, parent::BinaryNode; depth::Int=0)
+    !isdefined(parent, :left) || error("left child is already assigned")
+    node = initializeBinaryNode(data, parent; depth=depth)
     parent.left = node
 end
 
-function rightchild(data, parent::BinaryNode)
+function rightchild(data, parent::BinaryNode; depth::Int=0)
     !isdefined(parent, :right) || error("right child is already assigned")
-    node = typeof(parent)(data, parent)
+    node = initializeBinaryNode(data, parent; depth=depth)
     parent.right = node
 end
 
@@ -67,11 +82,11 @@ function acwpt(x::Vector{T}, node::BinaryNode,
         end
 
         # left
-        leftchild(left, node)
+        leftchild(left, node; depth=d+1)
         acwpt(left, node.left, P, Q, d+1)
 
         # right
-        rightchild(right, node)
+        rightchild(right, node; depth=d+1)
         acwpt(right, node.right, P, Q, d+1)
     end
 end
