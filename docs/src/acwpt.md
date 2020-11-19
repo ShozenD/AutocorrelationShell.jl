@@ -31,10 +31,16 @@ The `acwptPostOrderBestBasis` traverses the binary tree in an bottom-up order an
 is therefore a "greedy" way of choosing the optimal wavelet coefficients. The two function
 will often return a different binary tree for the same decomposition.
 
-We use different entropy methods as our criteria because the describe information-related properties for an accurate representation of a given signal. The entropy methods currently available within our package are, `ShannonEntropy`, `LogEnergyEntropy`, and `NormEntropy`. For a more detailed description of each method, refer to the [AC Wavelet Utils documentation](https://boundaryvalueproblems.gitlab.io/autocorrelation-shell/acwutil/).
+We use different entropy methods as our criteria because the describe information-related properties for an accurate representation of a given signal. The entropy methods currently available within our package are, `ShannonEntropy`, `LogEnergyEntropy`, and `NormEntropy`. For a more detailed description of each method, refer to the **AC Wavelet Utils documentation**.
 
 ```@docs
 acwptPostOrderBestBasis(tree::BinaryNode; et::Wavelets.Entropy=NormEntropy())
 
 acwptPreOrderBestBasis(tree::BinaryNode; et::Wavelets.Entropy=NormEntropy())
+```
+
+A simple visualization of the best basis decomposition can be obtained using the `plot_tfbdry` function, which highlights the selected nodes on a predefined grid. The autocorrelation wavelet decomposition is redundant, meaning that each node of the decomposition tree will be the same length as the original signal. Therefore the size of each grid cell does not accurately represent the length of the coefficient vector in each node. However, it is sufficient to understand which nodes are selected in the best basis tree.
+
+```@docs
+plot_tfbdry(x::BinaryNode)
 ```

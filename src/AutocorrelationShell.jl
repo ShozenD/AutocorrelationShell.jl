@@ -50,7 +50,8 @@ export
     acwpt,
     iacwpt,
     acwptPostOrderBestBasis,
-    acwptPreOrderBestBasis
+    acwptPreOrderBestBasis,
+    plot_tfbdry
 
 using
     AbstractTrees,

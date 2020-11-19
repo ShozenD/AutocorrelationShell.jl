@@ -134,13 +134,17 @@ end
 ## Post Order Best Basis
 function acwptPostOrderBestBasis!(node::BinaryNode; direction::AbstractString="right", et::Wavelets.Entropy=NormEntropy())
     if isdefined(node, :left) & isdefined(node, :right)
+
         el = acwptPostOrderBestBasis!(node.left, direction="left")
         er = acwptPostOrderBestBasis!(node.right)
+
         if (el + er)/2 < wentropy(node.data, et)
             return (el + er)/2
+
         elseif isdefined(node, :parent) # handling cases where the first decomposition is unuseful
             data = node.data
-            new_pruned_node = typeof(node)(data, node) # create node with no children
+            # new_pruned_node = typeof(node)(data, node) # create node with no children
+            new_pruned_node = initializeBinaryNode(data, node, node.depth)
             if direction == "right"
                 node.parent.right = new_pruned_node
             else
@@ -205,4 +209,66 @@ function acwptPreOrderBestBasis(tree::BinaryNode; et::Wavelets.Entropy=NormEntro
     best_tree = deepcopy(tree)
     acwptPreOrderBestBasis!(best_tree)
     return best_tree
+end
+
+"""
+    nodes_to_bitmap(x::BinaryNode)
+
+Translates the binary tree datastructure to a binary bitmap in preparation for visualization.
+
+# Arguments
+-`x::BinaryNode`: The entry point of the best basis tree.
+"""
+function tree_to_bitmap(x::BinaryNode)
+    nrow, ncol = length(x.data), dyadlength(x.data) + 1
+    arr, hash = zeros(nrow, ncol), zeros(ncol - 1)
+
+    @inbounds begin
+        for n in collect(PreOrderDFS(x))
+            d = n.depth
+            l = length(n.data)/2^d
+            _start = Int(hash[d]+1)
+            _end = Int(_start + l - 1)
+            if !isdefined(n, :left)
+                hash[d+1:end] .= _start + l/2 - 1
+                arr[_start:_end, d+1] .= 1
+            end
+            if !isdefined(n, :right)
+                hash[d+1:end] .= _end
+                arr[_start:_end, d+1] .= 1
+            end
+            hash[d] += l
+        end
+    end
+
+    return arr
+end
+
+"""
+    plot_tfbdry(x::BinaryNode)
+
+Plots the selected nodes of the best basis tree
+
+# Arguments
+-`x::BinaryNode`: The entry point of the best basis tree
+"""
+function plot_tfbdry(x::BinaryNode)
+    bitmap = tree_to_bitmap(x)
+    nrow, ncol = size(bitmap)
+    heatmap(
+        transpose(bitmap),
+        yflip=true,
+        legend=false,
+        yticks=([1:1:(ncol);], map(string, 0:1:(ncol-1)))
+    )
+    hline!([1.5:1:(ncol-0.5);], color=:red)
+    @inbounds begin
+        for i in 1:ncol
+            for j in 1:2^(i-1)
+                vpos = (nrow/2^i)*(2*j-1) + 0.5
+                plot!(vpos*ones(ncol-i+1), (i+0.5):(ncol+0.5), color=:red)
+            end
+        end
+    end
+    current()
 end
