@@ -25,6 +25,7 @@ export
     iacwt2D,
 
     # threshold
+    acthreshold!,
     acthreshold,
 
     # modify image
@@ -32,6 +33,7 @@ export
     # signal to noise ratio
     snr,
     get_snr,
+    acwt_snr,
 
     acwt_heatmap,
     # entropy
@@ -49,9 +51,12 @@ export
     rightchild,
     acwpt,
     iacwpt,
-    acwptPostOrderBestBasis,
-    acwptPreOrderBestBasis,
-    plot_tfbdry
+    acwpt_postorder_bb,
+    acwpt_preorder_bb,
+    selectednodes_plot,
+    threshold_bestbasis!,
+    threshold_bestbasis,
+    acwpt_snr
 
 using
     AbstractTrees,
