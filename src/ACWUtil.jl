@@ -194,6 +194,24 @@ function SoftThreshold!(x::AbstractArray{<:Number}, t::Real)
     return x
 end
 
+"""
+    acthreshold!(x::AbstractArray{<:Number}, type::AbstractString, t::Float64)
+
+Thresholds a given array of coeffecients using either hard thresholding or soft thresholding.
+
+# Arguments
+- `x::AbstractArray{<:Number}`: Autocorrelation wavelet coefficient array
+- `type::AbstractString`: Threshold type. "hard" or "soft"
+- `t::Float64`: threshold value
+"""
+function acthreshold!(x::AbstractArray{<:Number}, type::AbstractString, t::Float64)
+    if type == "hard"
+        HardThreshold!(x, t)
+    elseif type == "soft"
+        SoftThreshold!(x, t)
+    end
+end
+
 # Overall function
 """
     acthreshold(x::AbstractArray{<:Number}, type::AbstractString, t::Float64)
@@ -207,11 +225,7 @@ Thresholds a given array of coeffecients using either hard thresholding or soft 
 """
 function acthreshold(x::AbstractArray{<:Number}, type::AbstractString, t::Float64)
     y = deepcopy(x) # to prevent inplace behavior but slows speed
-    if type=="hard"
-        HardThreshold!(y, t)
-    elseif type=="soft"
-        SoftThreshold!(y, t)
-    end
+    acthreshold!(y, type, t)
     return y
 end
 
@@ -512,4 +526,20 @@ function wiggle!(wav; taxis=1:size(wav,1), zaxis=1:size(wav,2), sc=1, EdgeColor=
       end
     end
     plot!() # flushing the display.
+end
+
+"""
+    acwt_snr(y::AbstractArray, x::AbstractArray, type, step)
+
+Calculates the signal to noise ratio of a given signal and a noisy version of the same signal.
+"""
+function acwt_snr(y::AbstractArray, x::AbstractArray, type, step)
+    decomp = acwt(x; L=0, P=pfilter(wavelet(WT.db2)), Q=qfilter(wavelet(WT.db2)))
+    max_coef = decomp |> (a -> abs.(a)) |> maximum
+    thresh = [0:step:round(max_coef);]
+
+    reconst = map(t -> acthreshold(decomp, type, t), thresh) |> (a -> map(iacwt, a))
+    _snr = [snr(y, r) for r in reconst]
+
+    return thresh, _snr
 end
