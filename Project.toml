@@ -1,7 +1,7 @@
 name = "AutocorrelationShell"
 uuid = "69d4c476-349e-11e9-22d5-d17d72ccee3f"
 authors = ["Rishi Subramanian <risubramanian@ucdavis.edu>", "Shozen Dan <shodan@ucdavis.edu>", "Christina Chang"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 AbstractTrees = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
