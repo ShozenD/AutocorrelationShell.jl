@@ -5,7 +5,9 @@ using
     LinearAlgebra,
     AbstractTrees,
     Random,
-    Plots
+    Plots,
+    CSV,
+    DataFrames
 
 @testset "Autocorrelation Shell" begin
     Q = qfilter(wavelet(WT.db2));
@@ -31,45 +33,42 @@ using
 
     # Autocorrelation Wavelet Packet Transform
     @testset "ACWPT" begin
+        X = acwt(x, L=2, P=P, Q=Q)[:,4];
+        tree = acwpt(X, P, Q);
+
         @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
             decomp = acwt(X, L=0, P=P, Q=Q);
-            tree = acwpt(X, P, Q);
             norm(collect(PostOrderDFS(tree))[1].data - decomp[:,1]) == 0
         end
 
         @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
             norm(X - iacwpt(tree)) < 1e-14
         end
 
         @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
-            best_tree = acwptPostOrderBestBasis(tree)
+            best_tree = acwpt_postorder_bb(tree)
             norm(X - iacwpt(best_tree)) < 1e-15
         end
 
         @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
-            best_tree = acwptPreOrderBestBasis(tree)
+            best_tree = acwpt_preorder_bb(tree)
             norm(X - iacwpt(best_tree)) < 1e-15
         end
 
         @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
-            best_tree = acwptPostOrderBestBasis(tree, et=ShannonEntropy())
+            best_tree = acwpt_postorder_bb(tree, et=ShannonEntropy())
             norm(X - iacwpt(best_tree)) < 1e-15
         end
 
         @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
-            best_tree = acwptPostOrderBestBasis(tree, et=LogEnergyEntropy())
+            best_tree = acwpt_postorder_bb(tree, et=LogEnergyEntropy())
             norm(X - iacwpt(best_tree)) < 1e-15
+        end
+
+        @test begin
+            best_tree = acwpt_postorder_bb(tree)
+            p = selectednodes_plot(best_tree)
+            typeof(p) == Plots.Plot{Plots.GRBackend}
         end
     end
 
@@ -86,6 +85,29 @@ using
 
             p = wiggle!(acwt(x, L=1, P=P, Q=Q))
             typeof(p) == Plots.Plot{Plots.GRBackend}
+        end
+
+        # Test denoising
+        @test begin
+            test_data = CSV.File("data/wavelet_test_256.csv") |> DataFrame
+            rng = MersenneTwister(123);
+            y = test_data.doppler;
+            y_noisy = make_noisy(y, rng, 0.07);
+
+            acwpt_decomp = acwpt(y_noisy, P, Q);
+            bb = acwpt_postorder_bb(acwpt_decomp);
+
+            acwt_decomp = acwt(y_noisy; L=1, P=P, Q=Q);
+
+            t1, s1 = acwt_snr(y, y_noisy, "soft", 0.01);
+            thresh1 = acthreshold(acwt_decomp, "soft", t1[findmax(s1)[2]]);
+            acwt_reconst = iacwt(thresh1);
+
+            t2, s2 = acwpt_snr(y, y_noisy, "soft", 0.01);
+            thresh2 = threshold_bestbasis(bb, "soft", t2[findmax(s2)[2]]);
+            acwpt_reconst = iacwpt(thresh2);
+
+            (typeof(acwt_reconst) == Vector{Float64}) & (typeof(acwpt_reconst) == Vector{Float64})
         end
     end
 end
