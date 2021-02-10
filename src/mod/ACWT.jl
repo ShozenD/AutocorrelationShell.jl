@@ -7,7 +7,8 @@ export
     AcwptNode,
     initAcwptNode,
     leftchild,
-    rightchild
+    rightchild,
+    subtree
 
 using SpecialFunctions
 using AbstractTrees, Wavelets, LinearAlgebra
@@ -167,5 +168,26 @@ These next two definitions allow inference of the item type in iteration.
 """
 Base.eltype(::Type{<:TreeIterator{AcwptNode{T}}}) where T = AcwptNode{T}
 Base.IteratorEltype(::Type{<:TreeIterator{AcwptNode{T}}}) where T = Base.HasEltype()
+
+"""For acwpt array methods"""
+leftchild(i::Integer) = i<<1;
+rightchild(i::Integer) = i<<1+1;
+children(i::Integer) = (leftchild(i),rightchild(i));
+parent(i::Integer) = i>>1;
+
+# Find the indexes of the subtree
+function subtree!(nodes::Vector{Integer}, i::Integer, M::Integer)
+    if i<<1 <= M
+        append!(nodes, children(i))
+        subtree!(nodes, leftchild(i), M)
+        subtree!(nodes, rightchild(i), M)
+    end
+end
+
+function subtree(i::Integer, M::Integer)
+    nodes = Vector{Integer}(undef,0)
+    subtree!(nodes,i,M)
+    return nodes
+end
 
 end # End module

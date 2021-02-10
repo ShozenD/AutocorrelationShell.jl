@@ -1,28 +1,56 @@
 module ACUtil
 export
     collectleaves,
-    threshold!,
-    threshold,
     NormEntropy,
-    coefentropy
+    findcost,
+    makenoisy,
+    snr
 using ..ACWT
-using AbstractTrees, LinearAlgebra, Wavelets
+using AbstractTrees, LinearAlgebra, Random, Wavelets
 
 """Collects the leaves of the best basis tree"""
 collectleaves(x::AcwptNode) = collect(Leaves(x))
 
+function collectleaves(coefvec::Vector{Integer}, bt::BitVector, i::Integer=1)
+    M = length(bt)
+    if rightchild(i) <= M
+        if bt[leftchild(i)] != 0
+            collectleaves(coefvec,bt,leftchild(i))
+        end
+        if bt[rightchild(i)] !=  0
+            collectleaves(coefvec,bt,rightchild(i))
+        end
+        if bt[leftchild(i)] == 0 & bt[rightchild(i)] == 0
+            append!(coefvec,i)
+        end
+    else
+        if bt[i] == 1
+            append!(coefvec,i)
+        end
+    end
+end
+
+# By its nature the indexes are in PostOrder traversal oreder
+function collectleaves(bt::BitVector, exclude_scaling::Bool=false)
+    coefvec = Vector{Integer}(undef,0)
+    collectleaves(coefvec,bt,1)
+    if exclude_scaling # excluding scaling coefficients
+        popfirst!(coefvec)
+    end
+    return coefvec
+end
 
 ## Thresholding
 function Wavelets.Threshold.threshold!(x::AcwptNode, TH::Wavelets.Threshold.THType, t::Real)
     @assert t >= 0
     for leaf in collectleaves(x)
-        threshold!(leaf.data,TH,t)
+        Wavelets.Threshold.threshold!(leaf.data,TH,t)
     end
 end
 
 function Wavelets.Threshold.threshold(x::AcwptNode, TH::Wavelets.Threshold.THType, t::Real)
     y = deepcopy(x)
-    threshold!(y,TH,t)
+    Wavelets.Threshold.threshold!(y,TH,t)
     return y
 end
 
@@ -46,7 +74,39 @@ function Wavelets.Threshold.coefentropy(x::AbstractArray{T}, et::NormEntropy,
     return sum
 end
 
+# Computes vector of cost values
+function findcost(W::Array{Float64,2}, et::Wavelets.Entropy)
+    return [Wavelets.Threshold.coefentropy(w,et) for w in eachcol(W)]
+end
+
 ## Others
+"""
+    make_noisy(x::AbstractArray{<:Number}, rng::MersenneTwister, a::Float64)
+
+Adds gaussian white noise to an image.
+
+# Arguments
+`x::AbstractArray{<:Number}`: image
+`rng::MersenneTwister`: random number generator ex) rng = MersenneTwister(123)
+`a::Float64`: A scaling parameter to adjust level of noise.
+
+# Example
+```julia
+using AutocorrelationShell, Images, FileIO, Random
+
+# Load test image
+img = load("./test/pictures/boat.jpg")
+img = Float64.(Gray.(img))
+
+rng = MersenneTwister(123)
+noisy_image = make_noisy(img, rng, 0.7)
+```
+"""
+function makenoisy(x::AbstractArray{<:Number}, rng::MersenneTwister, a::Float64)
+    noisy = x + a * randn(rng, Float64, size(x))
+    return noisy
+end
+
 """
     snr(f::AbstractArray{T}, g::AbstractArray{T}) where T<:Number
 

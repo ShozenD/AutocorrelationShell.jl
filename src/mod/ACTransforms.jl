@@ -183,7 +183,8 @@ function iacwt(x::AbstractArray{Float64,4})
     return y
 end
 
-# Wavelet Packets functions
+## Wavelet Packets functions
+# Tree method
 function acwpt(x::Vector{T}, node::AcwptNode,
                wt::OrthoFilter,
                L::Integer=maxtransformlevels(x),
@@ -214,13 +215,39 @@ function acwpt(x::Vector{T}, node::AcwptNode,
     end
 end
 
-function acwpt(x::Vector{T},
-               wt::OrthoFilter,
-               L::Integer=maxtransformlevels(x)) where T<:Number
+# Array method
+function acwpt(W::Array{Float64,2}, i::Integer, d::Integer,
+               Pmf::Vector{Float64}, Qmf::Vector{Float64})
+    n,m = size(W)
+    if i<<1+1 <= m
+        @inbounds begin
+            for b = 0:(2^d-1) # depth starts from 2
+                s = W[echant(n,d,b),i]
+                W[echant(n,d,b),i<<1] = acfilter(s,Pmf)
+                W[echant(n,d,b),i<<1+1] = acfilter(s,Qmf)
+            end
+        end
+        acwpt(W,i<<1,d+1,Pmf,Qmf) # left
+        acwpt(W,i<<1+1,d+1,Pmf,Qmf) # right
+    end
+end
 
-    root = AcwptNode(x)
-    acwpt(x,root,wt,L)
-    return root
+# Combined
+function acwpt(x::Vector{T}, wt::OrthoFilter,
+               L::Integer=maxtransformlevels(x), method::Symbol=:tree) where T<:Number
+    if method == :tree
+        root = AcwptNode(x)
+        acwpt(x,root,wt,L)
+        return root
+    elseif method == :array
+        W = Array{Float64,2}(undef,length(x),2^(L+1)-1)
+        W[:,1] = x
+        Pmf, Qmf = ACWT.makeqmfpair(wt)
+        acwpt(W,1,0,Pmf,Qmf)
+        return W
+    else
+        throw(ArgumentError("unkown method"))
+    end
 end
 
 # Inverse ac wavelet packets
@@ -234,8 +261,34 @@ function iacwpt(x::AcwptNode)
     if !isdefined(x,:left) & !isdefined(x,:right)
         return x.data
     end
-
     return (left+right)/sqrt(2)
+end
+
+function iacwpt(x::Array{Float64,2}, bt::BitArray, i::Integer=1)
+    M = length(bt)
+    if rightchild(i) > M # Reached maximum level
+        return x[:,i]
+    end
+    if bt[leftchild(i)] != 0
+        left = iacwpt(x,bt,leftchild(i))
+    end
+    if bt[rightchild(i)] != 0
+        right = iacwpt(x,bt,rightchild(i))
+    end
+    if bt[i]==1 && (bt[leftchild(i)]==0 && bt[rightchild(i)]==0) # Is leafnode
+        return x[:,i]
+    end
+    return (left+right)/sqrt(2)
+end
+
+# TODO: Implement iacwpt for array method without inplace behavior
+function iacwpt!(x::Array{Float64,2})
+    n,m = size(x)
+    @inbounds begin
+        for i in (m-1):-2:2
+            x[:,convert(Int,i/2)] = (x[:,i] + x[:,i+1])/sqrt(2)
+        end
+    end
 end
 
 # best basis algorithm
@@ -251,9 +304,9 @@ function bestbasistree!(node::AcwptNode, et::Wavelets.Entropy=NormEntropy(), dir
             node = AcwptNode(node.data)
         else
             if dir === :right
-                node.parent.right = AcwptNode(node.data,node)
+                node.parent.right = AcwptNode(node.data,node.parent)
             else
-                node.parent.left = AcwptNode(node.data,node)
+                node.parent.left = AcwptNode(node.data,node.parent)
             end
             return Wavelets.Threshold.coefentropy(node.data,et)
         end
@@ -267,5 +320,21 @@ function Wavelets.Threshold.bestbasistree(x::AcwptNode,et::Wavelets.Entropy=Norm
     bestbasistree!(y,et)
     return y
 end
+
+function Wavelets.Threshold.bestbasistree(W::Array{Float64,2}, et::Wavelets.Entropy=NormEntropy())
+    _, M = size(W)
+    costvec = findcost(W,et)
+    besttree = trues(M)
+
+    for idx in (M>>1):-1:1
+        if costvec[idx] <= (costvec[idx<<1] + costvec[(idx<<1)+1])/2
+            besttree[subtree(idx,M)] .= false
+        else
+            costvec[idx] = (costvec[idx<<1] + costvec[(idx<<1)+1])/2
+        end
+    end
+    return besttree
+end
+
 
 end # End module
