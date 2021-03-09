@@ -31,7 +31,6 @@ function acwt end
 
 Perform a ac wavelet packet transform of the array `x`.
 The wavelet type `wt` determines the transform type.
-Returns a binary x object.
 
 # Examples
 ```julia

@@ -1,10 +1,14 @@
 using
     Test,
-    AutocorrelationShell,
+    # AutocorrelationShell,
     Wavelets,
     LinearAlgebra,
     AbstractTrees,
-    Plots
+    Plots,
+    SpecialFunctions
+
+include("../src/AutocorrelationShell.jl")
+using Main.AutocorrelationShell
 
 @testset "Autocorrelation Shell" begin
     x = zeros(256); x[128] = 1;
