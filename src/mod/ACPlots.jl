@@ -4,7 +4,7 @@ export
     wiggle,
     wiggle!
 using ..ACWT, ..ACTransforms, ..ACUtil
-using AbstractTrees, LinearAlgebra, Plots, Wavelets
+using AbstractTrees, LinearAlgebra, Plots, Wavelets, Statistics
 
 """
     nodes_to_bitmap(x::AcwptNode)

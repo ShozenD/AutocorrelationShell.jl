@@ -53,13 +53,11 @@ function autocorr(f::OrthoFilter)
     H = WT.qmf(f)
     l = length(H)
     result = zeros(l - 1)
-    @inbounds begin
-        for k in 1:(l - 1)
-            for i in 1:(l - k)
-                result[k] += H[i] * H[i + k]
-            end
-            result[k] *= 2
+    for k in 1:(l - 1)
+        for i in 1:(l - k)
+            @inbounds result[k] += H[i] * H[i + k]
         end
+        result[k] *= 2
     end
     return result
 end
@@ -96,6 +94,11 @@ end
 function makeqmfpair(f::OrthoFilter)
     pmfilter, qmfilter = pfilter(f), qfilter(f)
     return pmfilter, qmfilter
+end
+
+function makereverseqmfpair(f::OrthoFilter)
+    pmf, qmf = makeqmfpair(f)
+    return reverse(pmf), reverse(qmf)
 end
 
 ## ACWPT
