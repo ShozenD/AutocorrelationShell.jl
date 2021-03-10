@@ -280,3 +280,6 @@ docs/build/
 # ssh keys
 privatekey
 privatekey.pub
+
+# Ignore logo
+logo.pdf
