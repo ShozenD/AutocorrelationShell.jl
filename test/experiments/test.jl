@@ -1,85 +1,80 @@
-include("../src/AutocorrelationShell.jl")
-using Main.AutocorrelationShell
-using Random, Wavelets, AbstractTrees, LinearAlgebra
-rng = MersenneTwister(123);
+using AutocorrelationShell, LinearAlgebra, Wavelets, Plots, BenchmarkTools
 
-X₁ = randn(rng, 4); # length 4 random signal
-H = wavelet(WT.db2);
-Q = qfilter(H);
-P = pfilter(H);
-
-decomp = acwpt(X₁, P, Q)
-
-# Print the tree in the console
-print_tree(decomp)
-
-# Gather all nodes into a vector
-collect(PostOrderDFS(decomp))
-
-## Best Basis Tree Algorithm
-function acwptBestBasisTree(node::BinaryNode; direction::AbstractString="right", et::Wavelets.Entropy=NormEntropy())
-    if isdefined(node, :left) & isdefined(node, :right)
-        e0 = wentropy(node.data, et)
-        e10 = wentropy(node.left.data, et)
-        e11 = wentropy(node.right.data, et)
-        if (e10 + e11)/2 < e0
-            acwptBestBasisTree(node.left, direction="left")
-            acwptBestBasisTree(node.right)
-        else
-            data = node.data
-            new_pruned_node = typeof(node)(data, node) # create node with no children
-            if isdefined(node, :parent) # handling cases where the first decomposition is unuseful
-                if direction == "right"
-                    node.parent.right = new_pruned_node
-                else
-                    node.parent.left = new_pruned_node
-                end
-            else print("No good tree available")
+function acwt_step(v::AbstractVector{T}, j::Integer, h::Array{S,1},
+        g::Array{S,1}) where {T <: Number, S <: Number}
+    N = length(v)
+    L = length(h)
+    v1 = zeros(T, N)
+    w1 = zeros(T, N)
+    @inbounds begin
+        for i in 1:N
+            t = i
+            if N ÷ 2^(j-1) > L # adjusting index to deal with shift
+                i = mod1(i+2^(j+2),N)
+            end
+            for n in 1:L
+                t += 2^(j-1)
+                t = mod1(t, N)
+                w1[i] += h[n] * v[t]
+                v1[i] += g[n] * v[t]
             end
         end
     end
+    return v1, w1
 end
 
-acwptBestBasisTree(decomp, et=NormEntropy())
-print_tree(decomp)
+function acwt_test(x::AbstractVector{<:Number}, wt::OrthoFilter, L::Integer=maxtransformlevels(x))
 
-wentropy(decomp.left.data, NormEntropy())
+    @assert L <= maxtransformlevels(x) || throw(ArgumentError("Too many transform levels (length(x) < 2^L"))
+    @assert L >= 1 || throw(ArgumentError("L must be >= 1"))
 
-## Reconstruction Algorithm
-function aciwpt(tree)
-    if isdefined(tree, :left)
-        left = aciwpt(tree.left)
+    # Setup
+	n = length(x)
+    Pmf, Qmf = ACWT.makereverseqmfpair(wt)
+	wp = zeros(n,L+1)
+	wp[:,1] = x
+
+    for j in 1:L
+        @inbounds wp[:,1], wp[:,L+2-j] = acwt_step(wp[:,1],j,Qmf,Pmf)
     end
 
-    if isdefined(tree, :right)
-        right = aciwpt(tree.right)
-    end
-
-    if !isdefined(tree, :left) & !isdefined(tree, :right)
-        return tree.data
-    end
-
-    return (left + right)/sqrt(2)
+	return wp
 end
 
-reconst = aciwpt(decomp)
+# Array method
+function acwpt_test(W::Array{<:Number,2}, i::Integer, d::Integer,
+               Pmf::Vector{<:Number}, Qmf::Vector{<:Number})
+    n,m = size(W)
+    if i<<1+1 <= m
+        W[:,i<<1], W[:,i<<1+1] = acwt(W[:,i],d,Qmf,Pmf)
+        acwpt_test(W,i<<1,d+1,Pmf,Qmf) # left
+        acwpt_test(W,i<<1+1,d+1,Pmf,Qmf) # right
+    end
+end
 
-norm(X₁ - reconst)
+# Combined
+function acwpt_test(x::Vector{T}, wt::OrthoFilter,
+               L::Integer=maxtransformlevels(x), method::Symbol=:array) where T<:Number
+    if method == :tree
+        root = AcwptNode(x)
+        acwpt(x,root,wt,L)
+        return root
+    elseif method == :array
+        W = Array{Float64,2}(undef,length(x),2^(L+1)-1)
+        W[:,1] = x
+        Pmf, Qmf = ACWT.makereverseqmfpair(wt)
+        acwpt_test(W,1,1,Pmf,Qmf)
+        return W
+    else
+        throw(ArgumentError("unkown method"))
+    end
+end
 
-## Experiment
-decomp = acwpt(X₁, P, Q)
+x = randn(128)
+x[64] = 20
 
-decomp.left.data = zeros(4);
-decomp.left.left.data = zeros(4);
-decomp.left.right.data = zeros(4);
+y1 = acwpt_test(x, wavelet(WT.db4))
 
-decomp.right.data = zeros(4);
-decomp.right.right.data = zeros(4);
-decomp.right.left.data = [0, 1, 0, 0];
+y2 = acwpt(x, wavelet(WT.db4), maxtransformlevels(x), :array)
 
-reconst = aciwpt(decomp)
-decomp2 = acwpt(reconst, P, Q);
-
-acwptBestBasisTree(decomp2);
-
-print_tree(decomp2)
+norm(y1[:,128]-y2[:,128])

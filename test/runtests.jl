@@ -1,91 +1,49 @@
 using
     Test,
-    AutocorrelationShell,
+    # AutocorrelationShell,
     Wavelets,
     LinearAlgebra,
     AbstractTrees,
-    Random,
-    Plots
+    Plots,
+    SpecialFunctions
+
+include("../src/AutocorrelationShell.jl")
+using Main.AutocorrelationShell
 
 @testset "Autocorrelation Shell" begin
-    Q = qfilter(wavelet(WT.db2));
-    P = pfilter(wavelet(WT.db2));
     x = zeros(256); x[128] = 1;
 
     # Autocorrelation Wavelet Transform 1D
     @testset "ACW1D" begin
-        @test begin
-            decomp = acwt(x, L=0, P=P, Q=Q)
-            norm(x - iacwt(decomp)) < 1e-15
-        end
+        decomp = acwt(x, wavelet(WT.db4))
+        @test norm(x - iacwt(decomp)) < 1e-15
     end
 
     # Autocorrelation Wavelet Transform 2D
     @testset "ACW2D" begin
-        @test begin
-            X = randn(512, 512);
-            decomp = acwt2D(X; L_row=4, L_col=4, P=P, Q=Q)
-            norm(X - iacwt2D(decomp)) < 1e-12
-        end
+        X = randn(256, 256);
+        decomp = acwt(X, wavelet(WT.db4))
+        @test norm(X - iacwt(decomp)) < 1e-12
     end
 
     # Autocorrelation Wavelet Packet Transform
     @testset "ACWPT" begin
-        @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            decomp = acwt(X, L=0, P=P, Q=Q);
-            tree = acwpt(X, P, Q);
-            norm(collect(PostOrderDFS(tree))[1].data - decomp[:,1]) == 0
-        end
+        X = acwt(x, wavelet(WT.db4))[:,4];
+        y₁ = acwpt(X, wavelet(WT.db4));
+        y₂ = acwt(X, wavelet(WT.db4));
+        @test norm(y₁[:,256] - y₂[:,1]) == 0
 
-        @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
-            norm(X - iacwpt(tree)) < 1e-14
-        end
+        bb = bestbasistree(y₁, NormEntropy())
+        @test norm(X - iacwpt(y₁,bb)) < 1e-15
 
-        @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
-            best_tree = acwptPostOrderBestBasis(tree)
-            norm(X - iacwpt(best_tree)) < 1e-15
-        end
+        bb = bestbasistree(y₁, ShannonEntropy())
+        @test norm(X - iacwpt(y₁,bb)) < 1e-15
 
-        @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
-            best_tree = acwptPreOrderBestBasis(tree)
-            norm(X - iacwpt(best_tree)) < 1e-15
-        end
+        bb = bestbasistree(y₁, LogEnergyEntropy())
+        @test norm(X - iacwpt(y₁,bb)) < 1e-15
 
-        @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
-            best_tree = acwptPostOrderBestBasis(tree, et=ShannonEntropy())
-            norm(X - iacwpt(best_tree)) < 1e-15
-        end
-
-        @test begin
-            X = acwt(x, L=2, P=P, Q=Q)[:,4];
-            tree = acwpt(X, P, Q);
-            best_tree = acwptPostOrderBestBasis(tree, et=LogEnergyEntropy())
-            norm(X - iacwpt(best_tree)) < 1e-15
-        end
-    end
-
-    @testset "ACUtil" begin
-        @test snr([0, 100], [1, 100]) == 40
-
-        @test acthreshold([0.1, 0.2, 0.2, 0.3], "hard", 0.1) == [0, 0.2, 0.2, 0.3]
-        @test acthreshold([0.05, 0.2, 0.4, 0.5], "soft", 0.1) ≈ [0, 0.1, 0.3, 0.4]
-
-        # For the sake of code coverage
-        @test begin
-            p = wiggle(acwt(x, L=1, P=P, Q=Q))
-            typeof(p) == Plots.Plot{Plots.GRBackend}
-
-            p = wiggle!(acwt(x, L=1, P=P, Q=Q))
-            typeof(p) == Plots.Plot{Plots.GRBackend}
-        end
+        bb = bestbasistree(y₁, NormEntropy())
+        p = selectednodes_plot(bb)
+        @test typeof(p) == Plots.Plot{Plots.GRBackend}
     end
 end
