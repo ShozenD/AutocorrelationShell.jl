@@ -2,7 +2,6 @@
 
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://ShozenD.github.io/AutocorrelationShell.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://ShozenD.github.io/AutocorrelationShell.jl/dev)
-[![Build Status](https://travis-ci.com/ShozenD/AutocorrelationShell.jl.svg?branch=master)](https://travis-ci.com/ShozenD/AutocorrelationShell.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/st8rusn3rv0j463m?svg=true)](https://ci.appveyor.com/project/ShozenD/autocorrelationshell)
 [![codecov](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl)
 [![Coverage Status](https://coveralls.io/repos/github/ShozenD/AutocorrelationShell/badge.svg?branch=master)](https://coveralls.io/github/ShozenD/AutocorrelationShell?branch=master)
@@ -20,32 +19,28 @@ This package was first translated from Matlab code by Rishi Subramanian, and was
 ## Usage
 Load the autocorrelation module
 ```{julia}
-using AutocorrelationShell
+using Wavelets, AutocorrelationShell
 ```
 
 ## 1D Autocorrelation Wavelet Transform
 ```{julia}
 # Forward 1D Autocorrelation Wavelet Transform
-acwt(x; L, P, Q)
+y = acwt(x, wavelet(WT.db4))
 
 # Inverse 1D Autocorrelation Wavelet Transform
-iacwt(decomp)
+iacwt(y)
 ```
 
 ### Example
 Perform forward autocorrelation wavelet transform on the vector x
 ```{julia}
-using Wavelets
+x = zeros(256); x[128] = 1;
 
-Q = qfilter(wavelet(WT.db2))
-P = pfilter(wavelet(WT.db2))
+# Decompose signal
+y = acwt(x, wavelet(WT.db4))
 
-x = zeros(256)
-x[128] = 1
-
-decomp = acwt(x, L=2, P=P, Q=Q)
-
-wiggle(decomp, Overlap = false)
+# Display decomposition
+wiggle(y)
 ```
 
 Result:
@@ -55,9 +50,9 @@ Result:
 ## 2D Autocorrelation Wavelet Transform
 ```{julia}
 # Forward 2D Autocorrelation Wavelet Transform
-acwt2D(img; L_row, L_col, P, Q)
+acwt(img, wavelet(WT.db4))
 ```
-The `acwt2D` function performs a forward wavelet transformation on 2D signals such as images. It returns a 4 dimensional tensor(multidimensional array) with the dimensions (num_row, num_col, levels_of_decomp_row, levels_of_decomp_col).
+The `acwt` function performs a forward wavelet transformation on 2D signals such as images. It returns a 4 dimensional tensor(multidimensional array) with the dimensions (num_row, num_col, levels_of_decomp_row, levels_of_decomp_col).
 
 <img src="figures/ac2d_decomp_heatmap.png" alt="AC2D transform example" width="600" />
 
@@ -65,23 +60,20 @@ The `acwt2D` function performs a forward wavelet transformation on 2D signals su
 # Inverse 2D Autocorrelation Wavelet Transform
 iacwt2D(decomp)
 ```
-The `iacwt2D` function is the inverse function of `acwt2D`. It takes an array of autocorrelation wavelet coefficients and reconstructs the original signal.
+The `iacwt` function is the inverse function of `acwt`. It takes an array of autocorrelation wavelet coefficients and reconstructs the original signal.
 
 ### Example
 ```{julia}
-Q = qfilter(wavelet(WT.db2))
-P = pfilter(wavelet(WT.db2))
-
 img = load(../test/pictures/boat.jpg)
 img = Float64.(Gray.(img))
 
-decomp = acwt2D(img; L_row=2, L_col=2, P=P, Q=Q)
+decomp = acwt2D(img, wavelet(WT.db4))
 
 # Display the 6th row and column decomposition
 acwt_heatmap(decomp[:,:,6,6])
 
 # Revert to original signal
-reconst = iacwt2D(decomp)
+reconst = iacwt(decomp)
 ```
 
 ## Autocorrelation Wavelet Packet Transform
@@ -99,14 +91,6 @@ using Random, Wavelets, AbstractTrees
 rng = MersenneTwister(123);
 
 X₁ = randn(rng, 4); # length 4 random signal
-H = wavelet(WT.db2);
-Q = qfilter(H);
-P = pfilter(H);
-decomp = acwpt(X₁, P, Q)
 
-# Print the tree in the console
-print_tree(decomp)
-
-# Gather all nodes into a vector
-collect(PostOrderDFS(decomp))
+y = acwpt(X₁, wavelet(WT.db4))
 ```
