@@ -281,4 +281,6 @@ docs/build/
 privatekey
 privatekey.pub
 
+
+# Ignore logo
 logo.pdf
