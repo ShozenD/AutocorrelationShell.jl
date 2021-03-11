@@ -22,5 +22,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "https://github.com/ShozenD/AutocorrelationShell.jl.git"
+    repo = "https://github.com/ShozenD/AutocorrelationShell.jl"
 )
