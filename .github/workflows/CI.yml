@@ -56,9 +56,9 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using JuliaPkgDev
-            DocMeta.setdocmeta!(JuliaPkgDev, :DocTestSetup, :(using JuliaPkgDev); recursive=true)
-            doctest(JuliaPkgDev)'
+            using AutocorrelationShell
+            DocMeta.setdocmeta!(AutocorrelationShell, :DocTestSetup, :(using AutocorrelationShell); recursive=true)
+            doctest(AutocorrelationShell)'
       - run: julia --project=docs docs/make.jl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
