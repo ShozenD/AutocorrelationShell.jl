@@ -1,15 +1,20 @@
-push!(LOAD_PATH, "../src/")
-
 using
     Documenter,
     AutocorrelationShell
 
+DocMeta.setdocmeta!(AutocorrelationShell, :DocTestSetup, :(using AutocorrelationShell); recursive=true)
+
 makedocs(
     sitename="AutocorrelationShell.jl",
     modules = [AutocorrelationShell],
-    authors = "Naoki Saito, Rishi Subramanian, Christina Chang, and Shozen Dan",
+    authors = "Shozen Dan, Rishi Subramanian, Christina Chang, and Naoki Saito",
+    repo="https://github.com/ShozenD/AutocorrelationShell.jl/blob/{commit}{path}#{line}",
 
-    doctest = true,
+    format=Documenter.HTML(;
+        prettyurls=get(ENV, "CI", "false") == "true",
+        canonical="https://ShozenD.github.io/AutocorrelationShell.jl",
+        assets=String[],
+    ),
 
     pages = [
         "Home" => "index.md",
@@ -24,3 +29,5 @@ makedocs(
 deploydocs(
     repo = "https://github.com/ShozenD/AutocorrelationShell.jl"
 )
+
+println("\n", base64encode(read(filename, String)), "\n")
