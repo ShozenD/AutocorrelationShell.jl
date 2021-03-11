@@ -29,5 +29,3 @@ makedocs(
 deploydocs(
     repo = "https://github.com/ShozenD/AutocorrelationShell.jl"
 )
-
-println("\n", base64encode(read(filename, String)), "\n")
