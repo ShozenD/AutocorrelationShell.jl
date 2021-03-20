@@ -1,9 +1,10 @@
-.check: # Run only if specific files are changed
+.check: # Specifying files to run CI/CD
   script: echo "Running CI/CD only if specific files are changed"
   rules:
   - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH
     changes:
     - src/*
+    - test/runtest.jl
     - Project.toml
     - Manifest.toml 
     when: manual
