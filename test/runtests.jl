@@ -24,9 +24,9 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, Plots
 
         y₁ = acwpt(X, wavelet(WT.db4)); # Array method
         y₂ = acwpt(X, wavelet(WT.db4), maxtransformlevels(X), :tree); # Tree method
-        y₃ = acwt(X, wavelet(WT.db4)); # Normal ACDWT
+        y = acwt(X, wavelet(WT.db4)); # Normal ACDWT
         
-        @test norm(y₁[:,256] - y₃[:,1]) < 1e-15
+        @test norm(y₁[:,256] - y[:,1]) < 1e-15
         @test norm(iacwpt(y₂) - X) < 1e-15
 
         bb = bestbasistree(y₁, NormEntropy())
@@ -41,7 +41,7 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, Plots
         # Test tree method
         besttree = bestbasistree(y₂)
         @test norm(X - iacwpt(besttree)) < 1e-15
-        
+
         p = selectednodes_plot(besttree) 
         @test typeof(p) == Plots.Plot{Plots.GRBackend}
 
