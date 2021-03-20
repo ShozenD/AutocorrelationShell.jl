@@ -1,8 +1,8 @@
 name: CI
 on:
   - push:
-      paths:
-      - src/* # Any changes made in src will be tested
+      paths: # Specifying which files to run CI/CD for
+      - src/* 
       - test/runtest.jl
       - Manifest.toml
       - Project.toml
