@@ -2,7 +2,8 @@
 
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://ShozenD.github.io/AutocorrelationShell.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://ShozenD.github.io/AutocorrelationShell.jl/dev)
-![CI](https://github.com/ShozenD/AutocorrelationShell.jl/actions/workflows/CI.yml/badge.svg)
+[![CI](https://github.com/ShozenD/AutocorrelationShell.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/ShozenD/AutocorrelationShell.jl/actions)
+[![](https://gitlab.com/BoundaryValueProblems/autocorrelation-shell/badges/master/pipeline.svg)](https://gitlab.com/BoundaryValueProblems/autocorrelation-shell/-/commits/master)
 [![codecov](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl)
 
 
