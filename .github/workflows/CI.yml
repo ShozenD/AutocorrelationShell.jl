@@ -1,6 +1,11 @@
 name: CI
 on:
-  - push
+  - push:
+      paths:
+      - src/* # Any changes made in src will be tested
+      - test/runtest.jl
+      - Manifest.toml
+      - Project.toml
   - pull_request
 jobs:
   test:

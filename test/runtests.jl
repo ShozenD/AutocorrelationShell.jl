@@ -23,7 +23,7 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, Plots
         X = acwt(x, wavelet(WT.db4))[:,4];
         y₁ = acwpt(X, wavelet(WT.db4));
         y₂ = acwt(X, wavelet(WT.db4));
-        @test norm(y₁[:,256] - y₂[:,1]) == 0
+        @test norm(y₁[:,256] - y₂[:,1]) < 1e-15
 
         bb = bestbasistree(y₁, NormEntropy())
         @test norm(X - iacwpt(y₁,bb)) < 1e-15
