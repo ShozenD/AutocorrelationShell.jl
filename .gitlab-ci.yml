@@ -17,7 +17,8 @@
         using Printf
         @printf "Test coverage %.2f%%\n" 100c / t'
 
-Check Change: 
+Check Changes:
+  script: echo "Running CI/CD only if specific files are changed"
   rules:
   - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH
     changes:
