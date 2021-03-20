@@ -17,22 +17,21 @@
         using Printf
         @printf "Test coverage %.2f%%\n" 100c / t'
 
-Test:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH
-      changes:
-        - src/*
-        - Project.toml
-        - Manifest.toml 
-      when: manual
-  # Julia 1.0:
-  #   image: julia:1.0
-  #   extends:
-  #     - .script
-  #     - .coverage
-  Julia 1.5:
-    image: julia:1.5
-    extends:
-      - .script
-      - .coverage
+rules:
+  - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH
+    changes:
+      - src/*
+      - Project.toml
+      - Manifest.toml 
+    when: manual
+# Julia 1.0:
+#   image: julia:1.0
+#   extends:
+#     - .script
+#     - .coverage
+Julia 1.5:
+  image: julia:1.5
+  extends:
+    - .script
+    - .coverage
 
