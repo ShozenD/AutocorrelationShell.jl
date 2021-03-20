@@ -42,8 +42,8 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, Plots
         besttree = bestbasistree(y₂)
         @test norm(X - iacwpt(besttree)) < 1e-15
 
-        p = selectednodes_plot(besttree) 
-        @test typeof(p) == Plots.Plot{Plots.GRBackend}
+        # p = selectednodes_plot(besttree) 
+        # @test typeof(p) == Plots.Plot{Plots.GRBackend}
 
         # Array method
         bb = bestbasistree(y₁, NormEntropy())
