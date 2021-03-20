@@ -9,6 +9,7 @@
     - Manifest.toml 
     when: manual
 
+# Generated using PkgTemplate and altered to check specific files for changes
 .script:
   script:
     - |

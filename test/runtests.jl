@@ -21,9 +21,13 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, Plots
     # Autocorrelation Wavelet Packet Transform
     @testset "ACWPT" begin
         X = acwt(x, wavelet(WT.db4))[:,4];
-        y₁ = acwpt(X, wavelet(WT.db4));
-        y₂ = acwt(X, wavelet(WT.db4));
-        @test norm(y₁[:,256] - y₂[:,1]) < 1e-15
+
+        y₁ = acwpt(X, wavelet(WT.db4)); # Array method
+        y₂ = acwpt(X, wavelet(WT.db4), maxtransformlevels(X), :tree); # Tree method
+        y₃ = acwt(X, wavelet(WT.db4)); # Normal ACDWT
+        
+        @test norm(y₁[:,256] - y₃[:,1]) < 1e-15
+        @test norm(iacwpt(y₂) - X) < 1e-15
 
         bb = bestbasistree(y₁, NormEntropy())
         @test norm(X - iacwpt(y₁,bb)) < 1e-15
@@ -34,8 +38,22 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, Plots
         bb = bestbasistree(y₁, LogEnergyEntropy())
         @test norm(X - iacwpt(y₁,bb)) < 1e-15
 
+        # Test tree method
+        besttree = bestbasistree(y₂)
+        @test norm(X - iacwpt(besttree)) < 1e-15
+        
+        p = selectednodes_plot(besttree) 
+        @test typeof(p) == Plots.Plot{Plots.GRBackend}
+
+        # Array method
         bb = bestbasistree(y₁, NormEntropy())
         p = selectednodes_plot(bb)
         @test typeof(p) == Plots.Plot{Plots.GRBackend}
+    end
+
+    @testset "ACPlots" begin
+        y = acwt(x, wavelet(WT.db4)); # Normal ACDWT
+        @test typeof(wiggle(y)) == Plots.Plot{Plots.GRBackend}
+        @test typeof(wiggle!(y)) == Plots.Plot{Plots.GRBackend}
     end
 end
