@@ -1,4 +1,4 @@
-using AutocorrelationShell, LinearAlgebra, Wavelets, Plots, BenchmarkTools
+using AutocorrelationShell, LinearAlgebra, Wavelets, Plots
 
 function acwt_step(v::AbstractVector{T}, j::Integer, h::Array{S,1},
         g::Array{S,1}) where {T <: Number, S <: Number}
@@ -41,40 +41,33 @@ function acwt_test(x::AbstractVector{<:Number}, wt::OrthoFilter, L::Integer=maxt
 	return wp
 end
 
-# Array method
-function acwpt_test(W::Array{<:Number,2}, i::Integer, d::Integer,
-               Pmf::Vector{<:Number}, Qmf::Vector{<:Number})
-    n,m = size(W)
-    if i<<1+1 <= m
-        W[:,i<<1], W[:,i<<1+1] = acwt(W[:,i],d,Qmf,Pmf)
-        acwpt_test(W,i<<1,d+1,Pmf,Qmf) # left
-        acwpt_test(W,i<<1+1,d+1,Pmf,Qmf) # right
-    end
-end
+x = zeros(128)
+x[64] = 1
 
-# Combined
-function acwpt_test(x::Vector{T}, wt::OrthoFilter,
-               L::Integer=maxtransformlevels(x), method::Symbol=:array) where T<:Number
-    if method == :tree
-        root = AcwptNode(x)
-        acwpt(x,root,wt,L)
-        return root
-    elseif method == :array
-        W = Array{Float64,2}(undef,length(x),2^(L+1)-1)
-        W[:,1] = x
-        Pmf, Qmf = ACWT.makereverseqmfpair(wt)
-        acwpt_test(W,1,1,Pmf,Qmf)
-        return W
-    else
-        throw(ArgumentError("unkown method"))
-    end
-end
+acwt(x, wavelet(WT.db4)) |> wiggle
 
-x = randn(128)
-x[64] = 20
+acwt_test(x, wavelet(WT.db4)) |> wiggle
 
-y1 = acwpt_test(x, wavelet(WT.db4))
+acwt_test(x, wavelet(WT.haar)) |> wiggle
 
-y2 = acwpt(x, wavelet(WT.db4), maxtransformlevels(x), :array)
 
-norm(y1[:,128]-y2[:,128])
+ACWT.makeqmfpair(wavelet(WT.db4))
+
+Pmf_haar, Qmf_haar = ACWT.makeqmfpair(wavelet(WT.haar))
+
+Pmf_db2, Qmf_db2 = ACWT.makeqmfpair(wavelet(WT.db2))
+
+L, H = acwt_step(x, 1, Qmf_haar, Pmf_haar)
+
+LL, LH = acwt_step(L, 2, Qmf_haar, Pmf_haar)
+
+LLL, LLH = acwt_step(L, 3, Qmf_haar, Pmf_haar)
+
+
+plot(LL)
+
+argmax(L) # under shifts by 2
+
+argmax(LL) # under shifts by 6 (relative undershift is 4?)
+
+argmax(LLL) # u.s. by 10 (relative undershift is 6)

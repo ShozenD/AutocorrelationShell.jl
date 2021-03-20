@@ -4,16 +4,18 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, Plots
     x = zeros(256); x[128] = 1;
 
     # Autocorrelation Wavelet Transform 1D
-    @testset "ACW1D" begin
-        decomp = acwt(x, wavelet(WT.db4))
-        @test norm(x - iacwt(decomp)) < 1e-15
-    end
+    @testset "ACTransforms" begin
 
-    # Autocorrelation Wavelet Transform 2D
-    @testset "ACW2D" begin
-        X = randn(256, 256);
-        decomp = acwt(X, wavelet(WT.db4))
-        @test norm(X - iacwt(decomp)) < 1e-12
+        @testset "1D transform" begin
+            y = acwt(x, wavelet(WT.db4))
+            @test norm(x - iacwt(y)) < 1e-15
+        end
+
+        @testset "2D transform" begin
+            X = randn(256, 256);
+            decomp = acwt(X, wavelet(WT.db4))
+            @test norm(X - iacwt(decomp)) < 1e-12
+        end
     end
 
     # Autocorrelation Wavelet Packet Transform
