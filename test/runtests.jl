@@ -56,4 +56,10 @@ using Test, AutocorrelationShell, Wavelets, LinearAlgebra, Plots
         @test typeof(wiggle(y)) == Plots.Plot{Plots.GRBackend}
         @test typeof(wiggle!(y)) == Plots.Plot{Plots.GRBackend}
     end
+
+    @testset "ACUtil" begin
+        X = randn(128,128)
+        y = acwt(X, wavelet(WT.db4)); 
+        @test typeof(acwt_heatmap(y[1,1,:,:])) == Plots.Plot{Plots.GRBackend}
+    end
 end

@@ -4,9 +4,10 @@ export
     NormEntropy,
     findcost,
     makenoisy,
-    snr
+    snr,
+    acwt_heatmap
 using ..ACWT
-using AbstractTrees, LinearAlgebra, Random, Wavelets
+using AbstractTrees, LinearAlgebra, Random, Wavelets, Plots
 
 """Collects the leaves of the best basis tree"""
 collectleaves(x::AcwptNode) = collect(Leaves(x))
@@ -81,7 +82,7 @@ end
 
 ## Others
 """
-    make_noisy(x::AbstractArray{<:Number}, rng::MersenneTwister, a::Float64)
+    makenoisy(x::AbstractArray{<:Number}, rng::MersenneTwister, a::Float64)
 
 Adds gaussian white noise to an image.
 
@@ -98,8 +99,7 @@ using AutocorrelationShell, Images, FileIO, Random
 img = load("./test/pictures/boat.jpg")
 img = Float64.(Gray.(img))
 
-rng = MersenneTwister(123)
-noisy_image = make_noisy(img, rng, 0.7)
+noisy_image = makenoisy(img, MersenneTwister(123), 0.7)
 ```
 """
 function makenoisy(x::AbstractArray{<:Number}, rng::MersenneTwister, a::Float64)
@@ -116,6 +116,24 @@ function snr(f::AbstractArray{T}, g::AbstractArray{T}) where T<:Number
     L2_f = norm(f)
     L2_fg = norm(f-g)
     return 20*log10(L2_f/L2_fg)
+end
+
+"""
+    acwt_heatmap(x::AbstractArray{<:Number,2})
+
+Takes the natural log of the absolute value of each cell, and plots a heatmap.
+Can be used for visualizing an input image or the coefficient matrix of a 2D ACW decomposition.
+
+# Arguments
+- `x::AbstractArray{<:Number,2}`: A image or a 2D matrix
+"""
+function acwt_heatmap(x::AbstractArray{<:Number,2})
+    heatmap(log.(abs.(x)),
+            yflip=true,
+            axis=nothing,
+            colorbar_entry=false,
+            aspect_ratio=:equal,
+            showaxis=false)
 end
 
 end # End module
