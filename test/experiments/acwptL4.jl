@@ -87,14 +87,12 @@ function L4testdenoise_noshift(x::Vector{Float64}, noise::Float64;
     return mean(L₁,dims=1), mean(L₂,dims=1), mean(SNR,dims=1), mean(PSNR,dims=1)
 end
 
+## Shift experiment
 L1,L2,SNR,PSNR = L4testdenoise(testdata.mishmash, 0.7, TH=HardTH(), method=:jeff);
 
-L1,L2,SNR,PSNR = L4testdenoise_noshift(testdata.mishmash, 0.7, TH=HardTH(), method=:jeff);
+## No shift experiment
+L1, L2, SNR, PSNR = L4testdenoise_noshift(testdata.mishmash, 0.7, TH=SoftTH(), method=:jeff);
 
-L1
-
-L2
-
-PSNR
-
-SNR
+## Export results
+df = DataFrame(L1 = vec(L1), L2 = vec(L2), PSNR = vec(PSNR), SNR = vec(SNR))
+CSV.write("../../Desktop/results.csv", df)

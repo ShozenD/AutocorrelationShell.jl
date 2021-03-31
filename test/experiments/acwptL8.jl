@@ -87,14 +87,12 @@ function L8testdenoise_noshift(x::Vector{Float64}, noise::Float64;
     return mean(L₁,dims=1), mean(L₂,dims=1), mean(SNR,dims=1), mean(PSNR,dims=1)
 end
 
-L1,L2,SNR,PSNR = L8testdenoise(testdata.blocks, 1.25, TH=SoftTH(), method=:jeff);
+## Shifted experiment 
+L1, L2, SNR, PSNR = L8testdenoise(testdata.blocks, 1.25, TH=SoftTH(), method=:jeff);
 
-L1,L2,SNR,PSNR = L8testdenoise_noshift(testdata.mishmash, 0.7, TH=HardTH(), method=:jeff);
+## Non-shifted experiment
+L1, L2, SNR, PSNR = L8testdenoise_noshift(testdata.mishmash, 0.7, TH=SoftTH(), method=:jeff);
 
-L1
-
-L2
-
-PSNR
-
-SNR
+## Export Results
+df = DataFrame(L1 = vec(L1), L2 = vec(L2), PSNR = vec(PSNR), SNR = vec(SNR))
+CSV.write("../../Desktop/results.csv", df)

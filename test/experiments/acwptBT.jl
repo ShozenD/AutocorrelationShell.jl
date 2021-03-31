@@ -61,14 +61,18 @@ function testdenoise_noshift(x::Vector{Float64}, noise::Float64;
     return mean(L₁,dims=1), mean(L₂,dims=1), mean(SNR,dims=1), mean(PSNR,dims=1)
 end
 
- #L1, L2, SNR, PSNR = testdenoise(testdata.bumps, 0.5, TH=SoftTH(), method=:jeff);
+# L1, L2, SNR, PSNR = testdenoise(testdata.bumps, 0.5, TH=SoftTH(), method=:jeff);
 
-L1, L2, SNR, PSNR = testdenoise_noshift(testdata.heavy_sine, 0.6, TH=SoftTH(), method=:jeff);
+L1, L2, SNR, PSNR = testdenoise_noshift(testdata.mishmash, 0.7, TH=SoftTH(), method=:jeff);
 
-L1
+df = DataFrame(L1 = vec(L1), L2 = vec(L2), PSNR = vec(PSNR), SNR = vec(SNR))
 
-L2
+CSV.write("../../Desktop/results.csv", df)
 
-PSNR
+function addnoise(X::AbstractArray{<:Number,1}, S::Number=0.1)
+    N = length(X)
+    ϵ = randn(N)
 
-SNR
+    ϵ = S * norm(X) * ϵ/norm(ϵ)
+    Y = X + ϵ
+end
