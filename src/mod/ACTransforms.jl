@@ -284,7 +284,7 @@ function acwpt(x::Vector{T}, wt::OrthoFilter,
         acwpt(W,1,1,Qmf,Pmf)
         return W
     else
-        throw(ArgumentError("unkown method"))
+        throw(ArgumentError("Unknown method"))
     end
 end
 
