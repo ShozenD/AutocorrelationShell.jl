@@ -97,38 +97,37 @@ function iacwt(x::AbstractArray{<:Number,2})
     return y[:,1]
 end
 
-function acwt(x::AbstractArray{<:Number,1}, wt::OrthoFilter, L::Integer=maxtransformlevels(x))
-    # Setup
-    n = length(x)
-    Pmf, Qmf = ACWT.makeqmfpair(wt)
-    wp = zeros(n,L+1)
-    wp[:,1] = x
-    @inbounds begin
-        for d=0:(L-1)
-            for b=0:(2^d-1)
-                s = wp[echant(n,d,b),1]
-                high = acfilter(s,Qmf)
-                low = acfilter(s,Pmf)
-                wp[echant(n,d,b),L+1-d] = high
-                wp[echant(n,d,b),1] = low
-            end
-        end
-    end
-    return wp
-end
+# function acwt(x::AbstractArray{<:Number,1}, wt::OrthoFilter, L::Integer=maxtransformlevels(x))
+#     # Setup
+#     n = length(x)
+#     Pmf, Qmf = ACWT.makeqmfpair(wt)
+#     wp = zeros(n,L+1)
+#     wp[:,1] = x
+#     @inbounds begin
+#         for d=0:(L-1)
+#             for b=0:(2^d-1)
+#                 s = wp[echant(n,d,b),1]
+#                 high = acfilter(s,Qmf)
+#                 low = acfilter(s,Pmf)
+#                 wp[echant(n,d,b),L+1-d] = high
+#                 wp[echant(n,d,b),1] = low
+#             end
+#         end
+#     end
+#     return wp
+# end
 
 function acwt(v::AbstractVector{T}, j::Integer, h::Array{S,1},
-        g::Array{S,1}) where {T <: Number, S <: Number}
+    g::Array{S,1}) where {T <: Number, S <: Number}
     N = length(v)
     L = length(h)
     v1 = zeros(T, N)
     w1 = zeros(T, N)
+
     @inbounds begin
         for i in 1:N
             t = i
-            if N ÷ 2^(j-1) > L # adjusting index to deal with shift
-                i = mod1(i+2^(j+2),N)
-            end
+            i = mod1(i + (L÷2+1) * 2^(j-1),N) # Need to shift by half the filter size because of periodicity assumption 
             for n in 1:L
                 t += 2^(j-1)
                 t = mod1(t, N)
@@ -137,10 +136,10 @@ function acwt(v::AbstractVector{T}, j::Integer, h::Array{S,1},
             end
         end
     end
-    return v1, w1
+    return v1, w1 
 end
 
-function acwt_new(x::AbstractVector{<:Number}, wt::OrthoFilter, L::Integer=maxtransformlevels(x))
+function acwt(x::AbstractVector{<:Number}, wt::OrthoFilter, L::Integer=maxtransformlevels(x))
 
     @assert L <= maxtransformlevels(x) || throw(ArgumentError("Too many transform levels (length(x) < 2^L"))
     @assert L >= 1 || throw(ArgumentError("L must be >= 1"))
