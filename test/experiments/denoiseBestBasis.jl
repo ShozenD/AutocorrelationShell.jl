@@ -175,7 +175,6 @@ function threshold_vs_relativeerror_plot(x::Vector{<:Number}, y::Vector{<:Number
     return p
 end
 
-
 ## Helper functions
 function psnr(x::AbstractVector{T},x₀::AbstractVector{T}) where T<:Number
     sse = zero(T)

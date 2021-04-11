@@ -39,3 +39,13 @@ function acwt_test(x::AbstractVector{<:Number}, wt::OrthoFilter, L::Integer=maxt
 
 	return wp
 end
+
+x = zeros(128)
+x[64] = 1
+
+acwt(x, wavelet(WT.haar)) |> wiggle
+
+acwt(x, wavelet(WT.db3)) |> wiggle
+
+acwt(x, wavelet(WT.db5)) |> wiggle
+
