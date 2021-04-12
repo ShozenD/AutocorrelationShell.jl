@@ -42,21 +42,6 @@ acwpt(x, wavelet(WT.db4))
 function acwpt end
 
 """
-    bestbasistree(x, et)
-
-Returns the best basis tree for the ac wavelet packet transform
-using a specified cost function. *Default*: L1 norm (Sparcity)
-
-# Examples
-```julia
-bestbasistree(acwpt(x, wavelet(WT.db4)), NormEntropy())
-```
-
-**See also:** `acwpt`, `iacwpt`, `bestbasistree!`
-"""
-function bestbasistree end
-
-"""
 	iacwt
 
 The inverse of `acwt`
@@ -212,37 +197,6 @@ function iacwt(x::AbstractArray{<:Number,4})
 end
 
 ## Wavelet Packets functions
-# Tree method
-function acwpt(x::Vector{T}, node::AcwptNode,
-               wt::OrthoFilter,
-               L::Integer=maxtransformlevels(x),
-               d::Integer=0) where T<:Number
-
-    n = length(x)
-    Pmf, Qmf = ACWT.makeqmfpair(wt)
-    left, right = zeros(n), zeros(n)
-
-    if d < L
-        @inbounds begin
-            for b = 0:(2^d-1) # depth starts from 2
-                s = x[echant(n,d,b)]
-                high = acfilter(s,Qmf)
-                low = acfilter(s,Pmf)
-                left[echant(n,d,b)] = low
-                right[echant(n,d,b)] = high
-            end
-        end
-
-        # left
-        leftchild(left,node,d+1)
-        acwpt(left,node.left,wt,L,d+1)
-
-        # right
-        rightchild(right,node,d+1)
-        acwpt(right,node.right,wt,L,d+1)
-    end
-end
-
 # Array method
 # function acwpt(W::Array{<:Number,2}, i::Integer, d::Integer,
 #                Pmf::Vector{<:Number}, Qmf::Vector{<:Number})
@@ -270,22 +224,12 @@ function acwpt(W::Array{<:Number,2}, i::Integer, d::Integer,
     end
 end
 
-# Combined
-function acwpt(x::Vector{T}, wt::OrthoFilter,
-               L::Integer=maxtransformlevels(x), method::Symbol=:array) where T<:Number
-    if method == :tree
-        root = AcwptNode(x)
-        acwpt(x,root,wt,L)
-        return root
-    elseif method == :array
-        W = Array{Float64,2}(undef,length(x),2^(L+1)-1)
-        W[:,1] = x
-        Pmf, Qmf = ACWT.makereverseqmfpair(wt)
-        acwpt(W,1,1,Qmf,Pmf)
-        return W
-    else
-        throw(ArgumentError("Unknown method"))
-    end
+function acwpt(x::Vector{T}, wt::OrthoFilter, L::Integer=maxtransformlevels(x)) where T<:Number
+    W = Array{Float64,2}(undef,length(x),2^(L+1)-1)
+    W[:,1] = x
+    Pmf, Qmf = ACWT.makereverseqmfpair(wt)
+    acwpt(W,1,1,Qmf,Pmf)
+    return W
 end
 
 # Inverse ac wavelet packets
@@ -302,20 +246,26 @@ function iacwpt(x::AcwptNode)
     return (left+right)/sqrt(2)
 end
 
-function iacwpt(x::Array{<:Number,2}, bt::BitArray, i::Integer=1)
+function iacwpt(x::Array{<:Number,2}, bt::BitVector, i::Integer=1)
     M = length(bt)
+    if i == 1 && bt[i] == 0 # No interesting tree
+        return x[:,i]
+    end
     if rightchild(i) > M # Reached maximum level
         return x[:,i]
     end
-    if bt[leftchild(i)] != 0
+
+    if bt[i] != 0
         left = iacwpt(x,bt,leftchild(i))
     end
-    if bt[rightchild(i)] != 0
+    if bt[i] != 0
         right = iacwpt(x,bt,rightchild(i))
     end
-    if bt[i]==1 && (bt[leftchild(i)]==0 && bt[rightchild(i)]==0) # Is leafnode
+
+    if bt[i] == 0 && bt[parentnode(i)]==1 # Is leafnode
         return x[:,i]
     end
+
     return (left+right)/sqrt(2)
 end
 
@@ -328,51 +278,5 @@ function iacwpt!(x::Array{<:Number,2})
         end
     end
 end
-
-# best basis algorithm
-function bestbasistree!(node::AcwptNode, et::Wavelets.Entropy=NormEntropy(), dir::Symbol=:right)
-    if isdefined(node, :left) & isdefined(node, :right) # Is not leaf node
-
-        el = bestbasistree!(node.left,et,:left)
-        er = bestbasistree!(node.right,et,:right)
-
-        if (el+er)/2 < Wavelets.Threshold.coefentropy(node.data,et)
-            return (el+er)/2
-        elseif !isdefined(node,:parent) # No interesting decomposition found
-            node = AcwptNode(node.data)
-        else
-            if dir === :right
-                node.parent.right = AcwptNode(node.data,node.parent)
-            else
-                node.parent.left = AcwptNode(node.data,node.parent)
-            end
-            return Wavelets.Threshold.coefentropy(node.data,et)
-        end
-    else
-        return Wavelets.Threshold.coefentropy(node.data,et) # Leaf node
-    end
-end
-
-function Wavelets.Threshold.bestbasistree(x::AcwptNode,et::Wavelets.Entropy=NormEntropy())
-    y = deepcopy(x)
-    bestbasistree!(y,et)
-    return y
-end
-
-function Wavelets.Threshold.bestbasistree(W::Array{<:Number,2}, et::Wavelets.Entropy=NormEntropy())
-    _, M = size(W)
-    costvec = findcost(W,et)
-    besttree = trues(M)
-
-    for idx in (M>>1):-1:1
-        if costvec[idx] <= (costvec[idx<<1] + costvec[(idx<<1)+1])/2
-            besttree[subtree(idx,M)] .= false
-        else
-            costvec[idx] = (costvec[idx<<1] + costvec[(idx<<1)+1])/2
-        end
-    end
-    return besttree
-end
-
 
 end # End module
