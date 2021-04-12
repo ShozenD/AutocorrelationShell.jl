@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.0
+# v0.14.1
 
 using Markdown
 using InteractiveUtils
@@ -11,6 +11,12 @@ macro bind(def, element)
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : missing
         el
     end
+end
+
+# ╔═╡ f9e001ae-0323-4283-9af1-1a8252b503e7
+let
+    import Pkg
+    Pkg.activate(".")
 end
 
 # ╔═╡ 203fb8c8-4358-4908-b616-a691ce329c02
@@ -77,8 +83,45 @@ end
 # ╔═╡ 18144929-3f31-42b2-9e27-df146a687ae0
 norm(x - r)/length(x)
 
+# ╔═╡ 11e63c9a-6124-4122-9a86-ceed926d25d2
+md"# Data Setup
+* Generate a set of original signals $\rightarrow$ `x₀`
+* Add noise to original signals $\rightarrow$ `x`
+"
+
+# ╔═╡ 24bf8f8d-3880-4635-a610-93df82132a3e
+
+
+# ╔═╡ 126c41e7-dd65-46c6-8c5b-2439f5624fd5
+md"# Non-Redundant Transforms"
+
+# ╔═╡ 61d745d8-5c74-479b-9698-cd50bb68b3c7
+
+
+# ╔═╡ f2f949f8-772f-4787-8883-0d96137f0924
+md"# Redundant Transforms"
+
+# ╔═╡ 3895472f-0a4f-4b7a-84f6-470208b5e8cc
+md"## Autocorrelation Wavelet Transforms"
+
+# ╔═╡ 89a56a57-a5b9-4380-a618-97d8b901c01b
+
+
+# ╔═╡ 0440ce41-8c23-45e6-aa67-56c6a58298a6
+
+
+# ╔═╡ cb927f51-99f2-4eeb-a0e5-5f1c65464b6f
+md"## Stationary Wavelet Transforms"
+
+# ╔═╡ ab9b089f-fbb7-4436-8d6a-963db1e95670
+
+
+# ╔═╡ 8774496e-a184-4c9a-9335-d2f184673cf5
+
+
 # ╔═╡ Cell order:
 # ╟─53c257e0-96ba-11eb-3615-8bfed63b2c18
+# ╠═f9e001ae-0323-4283-9af1-1a8252b503e7
 # ╠═203fb8c8-4358-4908-b616-a691ce329c02
 # ╟─bc641876-9723-4c68-8221-ad03fb695c82
 # ╠═d0c98a14-ad3e-4a0b-b889-a3ea86f888f3
@@ -93,3 +136,14 @@ norm(x - r)/length(x)
 # ╠═fd0b11ee-a0b8-4c0d-8c88-c69996b1c42d
 # ╠═9b4ef541-9a36-4bc0-8654-10ab0a4e63b3
 # ╠═18144929-3f31-42b2-9e27-df146a687ae0
+# ╟─11e63c9a-6124-4122-9a86-ceed926d25d2
+# ╠═24bf8f8d-3880-4635-a610-93df82132a3e
+# ╟─126c41e7-dd65-46c6-8c5b-2439f5624fd5
+# ╠═61d745d8-5c74-479b-9698-cd50bb68b3c7
+# ╟─f2f949f8-772f-4787-8883-0d96137f0924
+# ╟─3895472f-0a4f-4b7a-84f6-470208b5e8cc
+# ╠═89a56a57-a5b9-4380-a618-97d8b901c01b
+# ╠═0440ce41-8c23-45e6-aa67-56c6a58298a6
+# ╟─cb927f51-99f2-4eeb-a0e5-5f1c65464b6f
+# ╠═ab9b089f-fbb7-4436-8d6a-963db1e95670
+# ╠═8774496e-a184-4c9a-9335-d2f184673cf5
