@@ -8,6 +8,7 @@ export
     initAcwptNode,
     leftchild,
     rightchild,
+    parentnode,
     subtree
 
 using SpecialFunctions
@@ -101,96 +102,30 @@ function makereverseqmfpair(f::OrthoFilter)
     return reverse(pmf), reverse(qmf)
 end
 
-## ACWPT
-"""
-The `AcwptNode` type is a composite type to records the result of the
-ac wavelet packet transform and its meta data.
-"""
-abstract type Node end
-abstract type BinaryNode <: Node end
-mutable struct AcwptNode{T} <: BinaryNode
-    data::T
-    parent::AcwptNode{T}
-    left::AcwptNode{T} # pointers to children
-    right::AcwptNode{T}
-
-    # for graphing purposes
-    depth::Int # tree depth
-
-    # Root constructor
-    AcwptNode{T}(data) where T = new{T}(data)
-    # Child node constructor
-    AcwptNode{T}(data, parent::AcwptNode{T}) where T = new{T}(data, parent)
-end
-
-"""Initializes root AcwptNode"""
-function AcwptNode(x)
-    node = AcwptNode{typeof(x)}(x)
-    node.depth = 0
-    return node
-end
-
-"""Initialize child AcwptNode"""
-function AcwptNode(x, parent::AcwptNode, depth::Integer=parent.depth+1)
-    node = typeof(parent)(x,parent)
-    node.depth = depth
-    return node
-end
-
-"""Creates left child node"""
-function leftchild(x, parent::AcwptNode, depth::Integer=parent.depth+1)
-    !isdefined(parent, :left) || error("left child is already assigned")
-    parent.left = AcwptNode(x, parent, depth)
-end
-
-"""Creates right child node"""
-function rightchild(data, parent::AcwptNode, depth::Integer=parent.depth+1)
-    !isdefined(parent, :right) || error("right child is already assigned")
-    parent.right = AcwptNode(data, parent, depth)
-end
-
-"""Using the AbstractTree API"""
-function AbstractTrees.children(node::AcwptNode)
-    if isdefined(node, :left)
-        if isdefined(node, :right)
-            return (node.left, node.right)
-        end
-        return (node.left,)
-    end
-    isdefined(node, :right) && return (node.right,)
-    return ()
-end
-
-"""Things that make the printing easier"""
-AbstractTrees.printnode(io::IO, node::AcwptNode) = print(io, node.data)
-
-"""
-**Optional enhancements**
-These next two definitions allow inference of the item type in iteration.
-(They are not sufficient to solve all internal inference issues, however.)
-"""
-Base.eltype(::Type{<:TreeIterator{AcwptNode{T}}}) where T = AcwptNode{T}
-Base.IteratorEltype(::Type{<:TreeIterator{AcwptNode{T}}}) where T = Base.HasEltype()
-
 """For acwpt array methods"""
 leftchild(i::Integer) = i<<1;
 rightchild(i::Integer) = i<<1+1;
 children(i::Integer) = (leftchild(i),rightchild(i));
-parent(i::Integer) = i>>1;
+parentnode(i::Integer) = i>>1;
 
-# Find the indexes of the subtree
+"""
+    subtree(i, M)
+
+Given the index `i` of a node in a binary tree, find all the index numbers of its children.
+`M` is the maximum possible index number for that tree (the bottom right node).
+"""
+function subtree(i::Integer, M::Integer)
+    nodes = Vector{Integer}(undef,0)
+    subtree!(nodes,i,M)
+    return nodes
+end
+
 function subtree!(nodes::Vector{Integer}, i::Integer, M::Integer)
     if i<<1 <= M
         append!(nodes, children(i))
         subtree!(nodes, leftchild(i), M)
         subtree!(nodes, rightchild(i), M)
     end
-end
-
-function subtree(i::Integer, M::Integer)
-    nodes = Vector{Integer}(undef,0)
-    subtree!(nodes,i,M)
-    return nodes
 end
 
 end # End module

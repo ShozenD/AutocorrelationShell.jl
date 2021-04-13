@@ -76,6 +76,11 @@ function Wavelets.Threshold.coefentropy(x::AbstractArray{T}, et::NormEntropy,
 end
 
 # Computes vector of cost values
+"""
+    findcost(W, et)
+
+Find the cost of each node in the stationary wavelet matrix `W` using a given cost function `et`.
+"""
 function findcost(W::Array{Float64,2}, et::Wavelets.Entropy)
     return [Wavelets.Threshold.coefentropy(w,et) for w in eachcol(W)]
 end
