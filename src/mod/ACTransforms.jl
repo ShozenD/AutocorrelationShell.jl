@@ -7,7 +7,7 @@ export
     acwpt,
     iacwpt
 using ..ACWT, ..ACUtil
-using AbstractTrees, LinearAlgebra, Wavelets
+using LinearAlgebra, Wavelets
 
 """
 	acwt(x, wt[, L=maxtransformlevels(x)])

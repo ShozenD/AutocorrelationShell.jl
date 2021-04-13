@@ -7,7 +7,7 @@ export
     snr,
     acwt_heatmap
 using ..ACWT
-using AbstractTrees, LinearAlgebra, Random, Wavelets, Plots
+using LinearAlgebra, Random, Wavelets, Plots
 
 function collectleaves(coefvec::Vector{Integer}, bt::BitVector, i::Integer=1)
     M = length(bt)

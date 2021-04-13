@@ -10,7 +10,7 @@ export
     subtree
 
 using SpecialFunctions
-using AbstractTrees, Wavelets, LinearAlgebra
+using Wavelets, LinearAlgebra
 
 ## AC1D & AC2D
 """Convolution filter"""

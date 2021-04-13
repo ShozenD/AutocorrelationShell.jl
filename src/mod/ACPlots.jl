@@ -4,7 +4,7 @@ export
     wiggle,
     wiggle!
 using ..ACWT, ..ACTransforms, ..ACUtil
-using AbstractTrees, LinearAlgebra, Plots, Wavelets, Statistics
+using LinearAlgebra, Plots, Wavelets, Statistics
 
 function treetobitmap(x::BitArray)
     M = length(x)
