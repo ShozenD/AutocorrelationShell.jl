@@ -232,20 +232,6 @@ function acwpt(x::Vector{T}, wt::OrthoFilter, L::Integer=maxtransformlevels(x)) 
     return W
 end
 
-# Inverse ac wavelet packets
-function iacwpt(x::AcwptNode)
-    if isdefined(x,:left)
-        left = iacwpt(x.left)
-    end
-    if isdefined(x,:right)
-        right = iacwpt(x.right)
-    end
-    if !isdefined(x,:left) & !isdefined(x,:right)
-        return x.data
-    end
-    return (left+right)/sqrt(2)
-end
-
 function iacwpt(x::Array{<:Number,2}, bt::BitVector, i::Integer=1)
     M = length(bt)
     if i == 1 && bt[i] == 0 # No interesting tree

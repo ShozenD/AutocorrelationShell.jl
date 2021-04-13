@@ -9,9 +9,6 @@ export
 using ..ACWT
 using AbstractTrees, LinearAlgebra, Random, Wavelets, Plots
 
-"""Collects the leaves of the best basis tree"""
-collectleaves(x::AcwptNode) = collect(Leaves(x))
-
 function collectleaves(coefvec::Vector{Integer}, bt::BitVector, i::Integer=1)
     M = length(bt)
     if rightchild(i) <= M
@@ -39,20 +36,6 @@ function collectleaves(bt::BitVector, exclude_scaling::Bool=false)
         popfirst!(coefvec)
     end
     return coefvec
-end
-
-## Thresholding
-function Wavelets.Threshold.threshold!(x::AcwptNode, TH::Wavelets.Threshold.THType, t::Real)
-    @assert t >= 0
-    for leaf in collectleaves(x)
-        Wavelets.Threshold.threshold!(leaf.data,TH,t)
-    end
-end
-
-function Wavelets.Threshold.threshold(x::AcwptNode, TH::Wavelets.Threshold.THType, t::Real)
-    y = deepcopy(x)
-    Wavelets.Threshold.threshold!(y,TH,t)
-    return y
 end
 
 ## Entropy

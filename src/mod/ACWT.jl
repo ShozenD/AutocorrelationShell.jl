@@ -4,8 +4,6 @@ export
     iconv,
     echant,
     acfilter,
-    AcwptNode,
-    initAcwptNode,
     leftchild,
     rightchild,
     parentnode,

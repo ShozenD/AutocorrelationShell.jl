@@ -6,36 +6,6 @@ export
 using ..ACWT, ..ACTransforms, ..ACUtil
 using AbstractTrees, LinearAlgebra, Plots, Wavelets, Statistics
 
-"""
-    nodes_to_bitmap(x::AcwptNode)
-
-Translates the binary tree datastructure to a bitmap for visualization.
-"""
-function treetobitmap(x::AcwptNode)
-    nrow, ncol = length(x.data), maxtransformlevels(x.data) + 1
-    arr, hash = zeros(nrow, ncol), zeros(ncol - 1)
-
-    @inbounds begin
-        for n in collect(PreOrderDFS(x))
-            d = n.depth
-            l = length(n.data)/2^d
-            _start = Int(hash[d]+1)
-            _end = Int(_start + l - 1)
-            if !isdefined(n, :left)
-                hash[d+1:end] .= _start + l/2 - 1
-                arr[_start:_end, d+1] .= 1
-            end
-            if !isdefined(n, :right)
-                hash[d+1:end] .= _end
-                arr[_start:_end, d+1] .= 1
-            end
-            hash[d] += l
-        end
-    end
-
-    return arr
-end
-
 function treetobitmap(x::BitArray)
     M = length(x)
     ncol::Int = log2(length(x)+1) # depth of tree
@@ -63,31 +33,6 @@ end
 Given a best basis binary tree, outputs a visual representation of the selected nodes.
 """
 function selectednodes_plot(x::BitArray, nodecolor::Symbol=:red)
-    bitmap = treetobitmap(x)
-    nrow, ncol = size(bitmap)
-    p = heatmap(
-        transpose(bitmap),
-        color = [:black, nodecolor],
-        yflip=true,
-        legend=false,
-        xlims = (1, nrow+0.5),
-        ylims = (0.5, ncol+0.5),
-        xticks = false,
-        yticks = 0:ncol
-    )
-    hline!([1.5:1:(ncol-0.5);], color=:white)
-    @inbounds begin
-        for i in 1:ncol
-            for j in 1:2^(i-1)
-                vpos = (nrow/2^i)*(2*j-1) + 0.5
-                plot!(vpos*ones(ncol-i+1), (i+0.5):(ncol+0.5), color=:white)
-            end
-        end
-    end
-    return p
-end
-
-function selectednodes_plot(x::AcwptNode, nodecolor::Symbol=:red)
     bitmap = treetobitmap(x)
     nrow, ncol = size(bitmap)
     p = heatmap(
