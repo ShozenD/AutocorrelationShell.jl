@@ -14,38 +14,38 @@ using AbstractTrees, Wavelets, LinearAlgebra
 
 ## AC1D & AC2D
 """Convolution filter"""
-function convf(a,b,sig)
-    rst = zeros(size(sig))
-    for i in eachindex(sig)
-        tmp =  sum(b[j] * sig[i-j+1] for j in 1:min(i, length(b)))
-        tmp -= sum(a[j] * rst[i-j+1] for j in 1:min(i, length(a)))
-        rst[i] = tmp / a[1]
-    end
-    return rst
-end
+# function convf(a,b,sig)
+#     rst = zeros(size(sig))
+#     for i in eachindex(sig)
+#         tmp =  sum(b[j] * sig[i-j+1] for j in 1:min(i, length(b)))
+#         tmp -= sum(a[j] * rst[i-j+1] for j in 1:min(i, length(a)))
+#         rst[i] = tmp / a[1]
+#     end
+#     return rst
+# end
 
-function iconv(f::Vector{T},x::Vector{T}) where T <: Number
-   n = length(x)
-   p = length(f)
-   if p <= n
-      xpadded = vcat(x[(n+1-p):n], x)
-   else
-      z = zeros(p)
-      for i=1:p
-          imod = 1 + rem(p*n -p + i-1,n)
-          z[i] = x[imod]
-      end
-      xpadded = vcat(z,x)
-   end
-   ypadded = convf(1, f, xpadded)
-   y = ypadded[(p+1):(n+p)]
-   return y
-end
+# function iconv(f::Vector{T},x::Vector{T}) where T <: Number
+#    n = length(x)
+#    p = length(f)
+#    if p <= n
+#       xpadded = vcat(x[(n+1-p):n], x)
+#    else
+#       z = zeros(p)
+#       for i=1:p
+#           imod = 1 + rem(p*n -p + i-1,n)
+#           z[i] = x[imod]
+#       end
+#       xpadded = vcat(z,x)
+#    end
+#    ypadded = convf(1, f, xpadded)
+#    y = ypadded[(p+1):(n+p)]
+#    return y
+# end
 
 """Sample the range `(b+1):n` in intervals of `2^d`"""
-function echant(n::Integer, d::Integer, b::Integer)
-    return (b + 1):(2^d):n
-end
+# function echant(n::Integer, d::Integer, b::Integer)
+#     return (b + 1):(2^d):n
+# end
 
 """Computes ac coefficients of given filter"""
 function autocorr(f::OrthoFilter)
@@ -62,15 +62,15 @@ function autocorr(f::OrthoFilter)
 end
 
 """Computes the response of signal to the autocorrelation filter"""
-function acfilter(x::Vector{T}, f::Vector{T}) where T <: Number
-    n = length(x)
-    p = length(f)
-    tran2 = p - 1
-    tran1 = tran2 ÷ 2
-
-    d = circshift(iconv(f, circshift(x, tran1)), -tran2)
-    return d[1:n]
-end
+# function acfilter(x::Vector{T}, f::Vector{T}) where T <: Number
+#     n = length(x)
+#     p = length(f)
+#     tran2 = p - 1
+#     tran1 = tran2 ÷ 2
+# 
+#     d = circshift(iconv(f, circshift(x, tran1)), -tran2)
+#     return d[1:n]
+# end
 
 """Computes low ac filter"""
 function pfilter(f::OrthoFilter)

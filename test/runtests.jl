@@ -1,10 +1,5 @@
 using Test, AutocorrelationShell, Wavelets, LinearAlgebra, Plots
 
-x = zeros(256); x[128] = 1;
-X = acwt(x, wavelet(WT.db4))[:,4];
-y₁ = acwpt(X, wavelet(WT.db4)); # Array method
-bb = bestbasistree(y₁, BB(stationary = true))
-
 @testset "Autocorrelation Shell" begin
     x = zeros(256); x[128] = 1;
 
