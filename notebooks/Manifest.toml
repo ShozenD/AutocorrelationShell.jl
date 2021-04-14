@@ -6,11 +6,6 @@ git-tree-sha1 = "485ee0867925449198280d4af84bdb46a2a404d0"
 uuid = "621f4979-c628-5d54-868e-fcf4e3e8185c"
 version = "1.0.1"
 
-[[AbstractTrees]]
-git-tree-sha1 = "03e0550477d86222521d254b741d470ba17ea0b5"
-uuid = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
-version = "0.3.4"
-
 [[Adapt]]
 deps = ["LinearAlgebra"]
 git-tree-sha1 = "f1b523983a58802c4695851926203b36e28f09db"
@@ -24,8 +19,8 @@ uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 
 [[AutocorrelationShell]]
-deps = ["AbstractTrees", "DSP", "Documenter", "LinearAlgebra", "Plots", "Random", "Reexport", "SpecialFunctions", "Statistics", "StatsBase", "Wavelets"]
-git-tree-sha1 = "289a8f4fe67bf574c47db37a0adcccb8c84d0e7f"
+deps = ["DSP", "Documenter", "LinearAlgebra", "Parameters", "Plots", "Random", "Reexport", "SpecialFunctions", "Statistics", "StatsBase", "Wavelets"]
+path = "/Users/shozendan/Documents/autocorrelation-shell"
 uuid = "69d4c476-349e-11e9-22d5-d17d72ccee3f"
 version = "0.1.1"
 
@@ -945,10 +940,8 @@ uuid = "29a6e085-ba6d-5f35-a997-948ac2efa89a"
 version = "0.9.2"
 
 [[WaveletsExt]]
-deps = ["AutocorrelationShell", "AverageShiftedHistograms", "LinearAlgebra", "Parameters", "Plots", "Random", "Reexport", "Statistics", "StatsBase", "Wavelets"]
-git-tree-sha1 = "5495a7c76265803d242b0b086eb29eb906770b99"
-repo-rev = "master"
-repo-url = "https://github.com/zengfung/WaveletsExt.jl.git"
+deps = ["AverageShiftedHistograms", "LinearAlgebra", "Parameters", "Plots", "Random", "Reexport", "Statistics", "StatsBase", "Wavelets"]
+path = "/Users/shozendan/Documents/WaveletsExt.jl"
 uuid = "8f464e1e-25db-479f-b0a5-b7680379e03f"
 version = "0.1.0"
 

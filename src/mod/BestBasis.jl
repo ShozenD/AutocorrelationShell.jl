@@ -18,11 +18,11 @@ export
     # best tree selection
     bestbasis_treeselection,
     # best basis types
-    BestBasisType,
-    LSDB,
-    JBB,
-    BB,
-    SIBB,
+    # BestBasisType,
+    # LSDB,
+    # JBB,
+    # BB,
+    # SIBB,
     # best basis tree
     bestbasis_tree,
     # best basis expansion coefficients
