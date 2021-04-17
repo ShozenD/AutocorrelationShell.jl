@@ -89,7 +89,7 @@ Plots.histogram(vec(abs.(y_test)), legend = false)
 md"Threshold the coefficients using an arbitrary threshold value"
 
 # ╔═╡ 10452433-7123-4006-9e3d-ae4245fefdc5
-threshold!(y_test, HardTH(), 0.2);
+threshold!(y_test, HardTH(), 0.3);
 
 # ╔═╡ a663045c-fa0f-49fe-88c2-794450cb7806
 md"Reconstruct the signal using the thresholded coefficients"
@@ -111,7 +111,7 @@ norm(x_test - r_test)/length(x_test)
 md"# II. Data Setup"
 
 # ╔═╡ d881753b-0432-451b-8de0-38a0b4b4382a
-md"**Autorun**: Disable before updating parameters!"
+md"**Autorun**: Please disable autorun before updating the experiment parameters, else it will run the entire notebook, which may take a few minutes."
 
 # ╔═╡ 7e94d13e-f84c-433c-bead-3a272c86fc9b
 @bind autorun Radio(["No","Yes"], default = "No")
