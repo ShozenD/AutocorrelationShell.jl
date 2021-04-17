@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.0
+# v0.14.1
 
 using Markdown
 using InteractiveUtils
@@ -17,6 +17,7 @@ end
 let
     import Pkg
     Pkg.activate(".")
+	Pkg.instantiate()
 end
 
 # ╔═╡ 203fb8c8-4358-4908-b616-a691ce329c02
