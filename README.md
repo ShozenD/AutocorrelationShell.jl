@@ -1,6 +1,5 @@
 [![AutocorrelationShell.jl](figures/autocorrelation_shell_logo.png)](https://ShozenD.github.io/AutocorrelationShell.jl/stable)
 
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://ShozenD.github.io/AutocorrelationShell.jl/stable)
 [![CI](https://github.com/ShozenD/AutocorrelationShell.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/ShozenD/AutocorrelationShell.jl/actions)
 [![](https://gitlab.com/BoundaryValueProblems/autocorrelation-shell/badges/master/pipeline.svg)](https://gitlab.com/BoundaryValueProblems/autocorrelation-shell/-/commits/master)
 [![codecov](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl)
@@ -24,7 +23,7 @@ julia> using Pkg; Pkg.add("AutocorrelationShell")
 ```
 
 ## Usage
-Load the autocorrelation module
+Load `AutocorrelationShell.jl` with the `Wavelets.jl` package
 ```{julia}
 using Wavelets, AutocorrelationShell
 ```
@@ -57,7 +56,7 @@ Result:
 ## 2D Autocorrelation Wavelet Transform
 ```{julia}
 # Forward 2D Autocorrelation Wavelet Transform
-acwt(img, wavelet(WT.db4))
+y = acwt(img, wavelet(WT.db4))
 ```
 The `acwt` function performs a forward wavelet transformation on 2D signals such as images. It returns a 4 dimensional tensor with the dimensions (num_row, num_col, levels_of_decomp_row, levels_of_decomp_col).
 
@@ -65,7 +64,7 @@ The `acwt` function performs a forward wavelet transformation on 2D signals such
 
 ```{julia}
 # Inverse 2D Autocorrelation Wavelet Transform
-iacwt2D(decomp)
+iacwt(y)
 ```
 The `iacwt` function is the inverse function of `acwt`. It takes an array of autocorrelation wavelet coefficients and reconstructs the original signal.
 
@@ -74,7 +73,7 @@ The `iacwt` function is the inverse function of `acwt`. It takes an array of aut
 X = load(../test/pictures/boat.jpg)
 X = Float64.(Gray.(X))
 
-Y = acwt2D(X, wavelet(WT.db4))
+Y = acwt(X, wavelet(WT.db4))
 
 # Revert to original signal
 Z = iacwt(Y)
@@ -91,10 +90,8 @@ The `acwpt` function computes the autocorrelation wavelet packet transform for 1
 
 ### Example
 ```{julia}
-using Random, Wavelets, AbstractTrees
-rng = MersenneTwister(123);
+using Wavelets
 
-X₁ = randn(rng, 4); # length 4 random signal
-
+X₁ = randn(4); # length 4 random signal
 y = acwpt(X₁, wavelet(WT.db4))
 ```

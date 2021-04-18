@@ -22,7 +22,6 @@ makedocs(
         "AC Wavelet 1D" => "acw1d.md",
         "AC Wavelet 2D" => "acw2d.md",
         "AC Wavelet Packets" => "acwpt.md",
-        "AC Wavelet Utils" => "acwutil.md"
     ]
 )
 

@@ -281,6 +281,8 @@ docs/build/
 privatekey
 privatekey.pub
 
-
 # Ignore logo
 logo.pdf
+
+# Ignore Manifest.toml
+Manifest.toml

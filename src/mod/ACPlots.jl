@@ -1,61 +1,9 @@
 module ACPlots
 export
-    selectednodes_plot,
     wiggle,
     wiggle!
-using ..ACWT, ..ACTransforms, ..ACUtil
+using ..ACWT, ..ACTransforms
 using LinearAlgebra, Plots, Wavelets, Statistics
-
-function treetobitmap(x::BitArray)
-    M = length(x)
-    ncol::Int = log2(length(x)+1) # depth of tree
-    nrow::Int = 2^(ncol-1) # length of original signal
-    arr = zeros(nrow, ncol)
-
-    for (idx, flg) in enumerate(x)
-        if x[idx]==1 && rightchild(idx) > M
-            arr[idx,ncol] = 1
-        elseif x[idx]==1 && (x[leftchild(idx)]==0 && x[rightchild(idx)]==0) #leafnode
-            d = floor(Int,log2(idx)) # depth
-            l = nrow >> d # length of subband
-            _start = (idx-2^d)*l+1
-            _end = _start+l-1
-            arr[_start:_end,d+1] .= 1
-        end
-    end
-
-    return arr
-end
-
-"""
-    selectednodes_plot(x::BitArray, nodecolor::Symbol = :red)
-
-Given a best basis binary tree, outputs a visual representation of the selected nodes.
-"""
-function selectednodes_plot(x::BitArray, nodecolor::Symbol=:red)
-    bitmap = treetobitmap(x)
-    nrow, ncol = size(bitmap)
-    p = heatmap(
-        transpose(bitmap),
-        color = [:black, nodecolor],
-        yflip=true,
-        legend=false,
-        xlims = (1, nrow+0.5),
-        ylims = (0.5, ncol+0.5),
-        xticks = false,
-        yticks = 0:ncol
-    )
-    hline!([1.5:1:(ncol-0.5);], color=:white)
-    @inbounds begin
-        for i in 1:ncol
-            for j in 1:2^(i-1)
-                vpos = (nrow/2^i)*(2*j-1) + 0.5
-                plot!(vpos*ones(ncol-i+1), (i+0.5):(ncol+0.5), color=:white)
-            end
-        end
-    end
-    return p
-end
 
 ## Visualizations
 """

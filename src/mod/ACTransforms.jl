@@ -2,11 +2,9 @@ module ACTransforms
 export
     acwt,
     iacwt,
-    hacwt,
-    vacwt,
     acwpt,
     iacwpt
-using ..ACWT, ..ACUtil
+using ..ACWT
 using LinearAlgebra, Wavelets
 
 """
@@ -51,15 +49,6 @@ The inverse of `acwt`
 function iacwt end
 
 """
-    iacwt!
-
-Same as `iacwt`, but without array allocation
-
-**See also:** `iacwt`
-"""
-function iacwt! end
-
-"""
     iacwpt
 
 The inverse of `acwpt`
@@ -69,10 +58,8 @@ The inverse of `acwpt`
 
 function iacwt!(x::AbstractArray{<:Number,2})
     n,m = size(x)
-    @inbounds begin
-        for i = 2:m
-            x[:,1] = (x[:,1] + x[:,i])/sqrt(2)
-        end
+    for i = 2:m
+        @inbounds x[:,1] = (x[:,1] + x[:,i])/sqrt(2)
     end
 end
 
@@ -82,28 +69,7 @@ function iacwt(x::AbstractArray{<:Number,2})
     return y[:,1]
 end
 
-# function acwt(x::AbstractArray{<:Number,1}, wt::OrthoFilter, L::Integer=maxtransformlevels(x))
-#     # Setup
-#     n = length(x)
-#     Pmf, Qmf = ACWT.makeqmfpair(wt)
-#     wp = zeros(n,L+1)
-#     wp[:,1] = x
-#     @inbounds begin
-#         for d=0:(L-1)
-#             for b=0:(2^d-1)
-#                 s = wp[echant(n,d,b),1]
-#                 high = acfilter(s,Qmf)
-#                 low = acfilter(s,Pmf)
-#                 wp[echant(n,d,b),L+1-d] = high
-#                 wp[echant(n,d,b),1] = low
-#             end
-#         end
-#     end
-#     return wp
-# end
-
-function acwt(v::AbstractVector{T}, j::Integer, h::Array{S,1},
-    g::Array{S,1}) where {T <: Number, S <: Number}
+function acwt_step(v::AbstractVector{T}, j::Integer, h::Array{T,1}, g::Array{T,1}) where T <: Number
     N = length(v)
     L = length(h)
     v1 = zeros(T, N)
@@ -118,7 +84,7 @@ function acwt(v::AbstractVector{T}, j::Integer, h::Array{S,1},
                 t = mod1(t, N)
                 w1[i] += h[n] * v[t]
                 v1[i] += g[n] * v[t]
-            end
+            end 
         end
     end
     return v1, w1 
@@ -136,7 +102,7 @@ function acwt(x::AbstractVector{<:Number}, wt::OrthoFilter, L::Integer=maxtransf
 	wp[:,1] = x
 
     for j in 1:L
-        @inbounds wp[:,1], wp[:,L+2-j] = acwt(wp[:,1],j,Qmf,Pmf)
+        @inbounds wp[:,1], wp[:,L+2-j] = acwt_step(wp[:,1],j,Qmf,Pmf)
     end
 
 	return wp
@@ -196,73 +162,36 @@ function iacwt(x::AbstractArray{<:Number,4})
     return y
 end
 
-## Wavelet Packets functions
-# Array method
-# function acwpt(W::Array{<:Number,2}, i::Integer, d::Integer,
-#                Pmf::Vector{<:Number}, Qmf::Vector{<:Number})
-#     n,m = size(W)
-#     if i<<1+1 <= m
-#         @inbounds begin
-#             for b = 0:(2^d-1) # depth starts from 2
-#                 s = W[echant(n,d,b),i]
-#                 W[echant(n,d,b),i<<1] = acfilter(s,Pmf)
-#                 W[echant(n,d,b),i<<1+1] = acfilter(s,Qmf)
-#             end
-#         end
-#         acwpt(W,i<<1,d+1,Pmf,Qmf) # left
-#         acwpt(W,i<<1+1,d+1,Pmf,Qmf) # right
-#     end
-# end
-
-function acwpt(W::Array{<:Number,2}, i::Integer, d::Integer,
-               Qmf::Vector{<:Number}, Pmf::Vector{<:Number})
+function acwpt_step(W::AbstractArray{T,2}, i::Integer, d::Integer, Qmf::Vector{T}, Pmf::Vector{T}) where T <: Number
     n,m = size(W)
     if i<<1+1 <= m
-        W[:,i<<1], W[:,i<<1+1] = acwt(W[:,i],d,Qmf,Pmf)
-        acwpt(W,i<<1,d+1,Qmf,Pmf) # left
-        acwpt(W,i<<1+1,d+1,Qmf,Pmf) # right
+      W[:,i<<1], W[:,i<<1+1] = acwt_step(W[:,i],d,Qmf,Pmf)
+      acwpt_step(W, leftchild(i), d+1, Qmf, Pmf) # left
+      acwpt_step(W, rightchild(i), d+1, Qmf, Pmf) # right
     end
-end
-
-function acwpt(x::Vector{T}, wt::OrthoFilter, L::Integer=maxtransformlevels(x)) where T<:Number
-    W = Array{Float64,2}(undef,length(x),2^(L+1)-1)
+  end
+  
+  function acwpt(x::AbstractVector{T}, wt::OrthoFilter, L::Integer=maxtransformlevels(x)) where T<:Number
+    W = Array{Float64,2}(undef,length(x),2<<L-1)
     W[:,1] = x
     Pmf, Qmf = ACWT.makereverseqmfpair(wt)
-    acwpt(W,1,1,Qmf,Pmf)
+    acwpt_step(W,1,1,Qmf,Pmf)
     return W
-end
+  end
 
-function iacwpt(x::Array{<:Number,2}, bt::BitVector, i::Integer=1)
-    M = length(bt)
-    if i == 1 && bt[i] == 0 # No interesting tree
-        return x[:,i]
-    end
-    if rightchild(i) > M # Reached maximum level
-        return x[:,i]
-    end
+function iacwpt(xw::AbstractArray{<:Number,2}, tree::BitVector, i::Integer=1)
 
-    if bt[i] != 0
-        left = iacwpt(x,bt,leftchild(i))
-    end
-    if bt[i] != 0
-        right = iacwpt(x,bt,rightchild(i))
+    @assert i <= size(xw, 2)
+    @assert isvalidtree(xw[:,1], tree)
+    n₀ = length(tree)
+    if i > n₀ || tree[i] == false       # leaf node
+        return xw[:,i]
     end
 
-    if bt[i] == 0 && bt[parentnode(i)]==1 # Is leafnode
-        return x[:,i]
-    end
+    v₀ = iacwpt(xw,tree,leftchild(i))
+    v₁ = iacwpt(xw,tree,rightchild(i))
 
-    return (left+right)/sqrt(2)
-end
-
-# TODO: Implement iacwpt for array method without inplace behavior
-function iacwpt!(x::Array{<:Number,2})
-    n,m = size(x)
-    @inbounds begin
-        for i in (m-1):-2:2
-            x[:,convert(Int,i/2)] = (x[:,i] + x[:,i+1])/sqrt(2)
-        end
-    end
+    return (v₀ + v₁) / √2
 end
 
 end # End module
