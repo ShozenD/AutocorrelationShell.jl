@@ -20,6 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         version:
+          - '1.0'
+          - '1.5'
           - '1.6'
           - 'nightly'
         os:
@@ -71,4 +73,3 @@ jobs:
       - run: julia --project=docs docs/make.jl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # Documents will have to be generated locally, then pushed to the repo

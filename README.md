@@ -4,13 +4,20 @@
 [![](https://gitlab.com/BoundaryValueProblems/autocorrelation-shell/badges/master/pipeline.svg)](https://gitlab.com/BoundaryValueProblems/autocorrelation-shell/-/commits/master)
 [![codecov](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ShozenD/AutocorrelationShell.jl)
 
+<span style="color:red">**Warning**</span>: `AutocorrelationShell.jl` is deprecated and will be part of `WaveletsExt.jl` from April 23, 2021. Please follow the following steps to remove this package from your REPL and migrate to `WaveletsExt.jl`.
+```
+julia> ]
+(@v1.x) pkg> rm AutocorrelationShell
+(@v1.x) pkg> update
+(@v1.x) pkg> add WaveletsExt
+```
 
-This package is a [Julia](https://github.com/JuliaLang/julia) implementation of autocorrelation wavelets. The package includes the 1D autocorrelation wavelet transform, 2D autocorrelation wavelet transform, and autocorrelation wavelet packet transform.
+This package is a [Julia](https://github.com/JuliaLang/julia) implementation of Autocorrelation wavelet transforms (ACWT). AC wavelets are a special case of the stationary wavelet transform. This package includes the 1D autocorrelation wavelet transform, 2D autocorrelation wavelet transform, and autocorrelation wavelet packet transform.
 
 Signal representations using autocorrelation wavelets are redundant and non-orthogonal. Some desirable properties of autocorrelation wavelet transforms are symmetry without losing vanishing moments, edge detection and characterization capabilities, and shift invariance. Autocorrelation wavelets can be used as a tool for data analysis such as time series analysis and image analysis.
 
 ## Authors
-This package was first translated from Matlab code by Rishi Subramanian, and was extended by Christina Chang, and currently maintained by Shozen Dan under the supervision of Professor Naoki Saito at University of California, Davis.
+This package was first translated from Matlab by Rishi Subramanian, and was extended by Christina Chang, and currently maintained by Shozen Dan under the supervision of Professor Naoki Saito at University of California, Davis.
 
 ## Installation
 The package is part of the official Julia Registry. It can be install via the Julia REPL
@@ -40,8 +47,6 @@ iacwt(y)
 ### Example
 Perform forward autocorrelation wavelet transform on the vector x
 ```{julia}
-x = zeros(256); x[128] = 1;
-
 # Decompose signal
 y = acwt(x, wavelet(WT.db4))
 
@@ -90,8 +95,6 @@ The `acwpt` function computes the autocorrelation wavelet packet transform for 1
 
 ### Example
 ```{julia}
-using Wavelets
-
 X₁ = randn(4); # length 4 random signal
 y = acwpt(X₁, wavelet(WT.db4))
 ```
